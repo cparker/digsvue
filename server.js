@@ -41,6 +41,8 @@ module.exports = (() => {
     let db
 
     console.log('dbURI', dbURI)
+
+    /*
     mongoClient.connect(dbURI)
         .then(ddb => {
             console.log('connected to mongo')
@@ -49,6 +51,8 @@ module.exports = (() => {
         .catch(er => {
             console.log('error connecting to mongo', er)
         })
+
+        */
 
     app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
