@@ -1,11 +1,11 @@
-prefix=/app/vendor/libav
+prefix=/opt/apps
 exec_prefix=${prefix}
 libdir=${prefix}/lib
 includedir=${prefix}/include
 
 Name: libavutil
 Description: Libav utility library
-Version: 54.3.0
+Version: 55.3.0
 Requires: 
 Requires.private: 
 Conflicts:

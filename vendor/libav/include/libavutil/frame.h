@@ -87,6 +87,12 @@ enum AVFrameSideDataType {
      * in ETSI TS 101 154 using enum AVActiveFormatDescription.
      */
     AV_FRAME_DATA_AFD,
+
+    /**
+     * This side data must be associated with an audio frame and corresponds to
+     * enum AVAudioServiceType defined in avcodec.h.
+     */
+    AV_FRAME_DATA_AUDIO_SERVICE_TYPE,
 };
 
 enum AVActiveFormatDescription {
@@ -195,11 +201,6 @@ typedef struct AVFrame {
      */
     enum AVPictureType pict_type;
 
-#if FF_API_AVFRAME_LAVC
-    attribute_deprecated
-    uint8_t *base[AV_NUM_DATA_POINTERS];
-#endif
-
     /**
      * Sample aspect ratio for the video frame, 0/1 if unknown/unspecified.
      */
@@ -234,78 +235,17 @@ typedef struct AVFrame {
      */
     int quality;
 
-#if FF_API_AVFRAME_LAVC
-    attribute_deprecated
-    int reference;
-
-    /**
-     * QP table
-     */
-    attribute_deprecated
-    int8_t *qscale_table;
-    /**
-     * QP store stride
-     */
-    attribute_deprecated
-    int qstride;
-
-    attribute_deprecated
-    int qscale_type;
-
-    /**
-     * mbskip_table[mb]>=1 if MB didn't change
-     * stride= mb_width = (width+15)>>4
-     */
-    attribute_deprecated
-    uint8_t *mbskip_table;
-
-    /**
-     * motion vector table
-     * @code
-     * example:
-     * int mv_sample_log2= 4 - motion_subsample_log2;
-     * int mb_width= (width+15)>>4;
-     * int mv_stride= (mb_width << mv_sample_log2) + 1;
-     * motion_val[direction][x + y*mv_stride][0->mv_x, 1->mv_y];
-     * @endcode
-     */
-    attribute_deprecated
-    int16_t (*motion_val[2])[2];
-
-    /**
-     * macroblock type table
-     * mb_type_base + mb_width + 2
-     */
-    attribute_deprecated
-    uint32_t *mb_type;
-
-    /**
-     * DCT coefficients
-     */
-    attribute_deprecated
-    short *dct_coeff;
-
-    /**
-     * motion reference frame index
-     * the order in which these are stored can depend on the codec.
-     */
-    attribute_deprecated
-    int8_t *ref_index[2];
-#endif
-
     /**
      * for some private data of the user
      */
     void *opaque;
 
+#if FF_API_ERROR_FRAME
     /**
-     * error
+     * @deprecated unused
      */
-    uint64_t error[AV_NUM_DATA_POINTERS];
-
-#if FF_API_AVFRAME_LAVC
     attribute_deprecated
-    int type;
+    uint64_t error[AV_NUM_DATA_POINTERS];
 #endif
 
     /**
@@ -329,17 +269,6 @@ typedef struct AVFrame {
      */
     int palette_has_changed;
 
-#if FF_API_AVFRAME_LAVC
-    attribute_deprecated
-    int buffer_hints;
-
-    /**
-     * Pan scan.
-     */
-    attribute_deprecated
-    struct AVPanScan *pan_scan;
-#endif
-
     /**
      * reordered opaque 64bit (generally an integer or a double precision float
      * PTS but can be anything).
@@ -350,25 +279,6 @@ typedef struct AVFrame {
      * @deprecated in favor of pkt_pts
      */
     int64_t reordered_opaque;
-
-#if FF_API_AVFRAME_LAVC
-    /**
-     * @deprecated this field is unused
-     */
-    attribute_deprecated void *hwaccel_picture_private;
-
-    attribute_deprecated
-    struct AVCodecContext *owner;
-    attribute_deprecated
-    void *thread_opaque;
-
-    /**
-     * log2 of the size of the block which a single vector in motion_val represents:
-     * (4->16x16, 3->8x8, 2-> 4x4, 1-> 2x2)
-     */
-    attribute_deprecated
-    uint8_t motion_subsample_log2;
-#endif
 
     /**
      * Sample rate of the audio data.
@@ -382,7 +292,9 @@ typedef struct AVFrame {
 
     /**
      * AVBuffer references backing the data for this frame. If all elements of
-     * this array are NULL, then this frame is not reference counted.
+     * this array are NULL, then this frame is not reference counted. This array
+     * must be filled contiguously -- if buf[i] is non-NULL then buf[j] must
+     * also be non-NULL for all j < i.
      *
      * There may be at most one AVBuffer per data plane, so for video this array
      * always contains all the references. For planar audio with more than

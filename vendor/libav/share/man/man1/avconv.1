@@ -133,15 +133,18 @@
 .\" ========================================================================
 .\"
 .IX Title "AVCONV 1"
-.TH AVCONV 1 "2016-06-14" " " " "
+.TH AVCONV 1 "2015-12-03" " " " "
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
+.SH "NAME"
 avconv \- avconv video converter
-.PP
+.SH "SYNOPSIS"
+.IX Header "SYNOPSIS"
 avconv [global options] [[infile options][\fB\-i\fR \fIinfile\fR]]... {[outfile options] \fIoutfile\fR}...
-.PP
+.SH "DESCRIPTION"
+.IX Header "DESCRIPTION"
 avconv is a very fast video and audio converter that can also grab from
 a live audio/video source. It can also convert between arbitrary sample
 rates and resize video on the fly with a high quality polyphase filter.
@@ -194,7 +197,8 @@ to 1 fps and the frame rate of the output file to 24 fps:
 .Ve
 .PP
 The format option may be needed for raw input files.
-.PP
+.SH "DETAILED DESCRIPTION"
+.IX Header "DETAILED DESCRIPTION"
 The transcoding process in \fBavconv\fR for each output can be described by
 the following diagram:
 .PP
@@ -324,7 +328,8 @@ diagram above will in this case simplify to this:
 Since there is no decoding or encoding, it is very fast and there is no quality
 loss. However it might not work in some cases because of many factors. Applying
 filters is obviously also impossible, since filters work on uncompressed data.
-.PP
+.SH "STREAM SELECTION"
+.IX Header "STREAM SELECTION"
 By default avconv tries to pick the \*(L"best\*(R" stream of each type present in input
 files and add them to each output file. For video, this means the highest
 resolution, for audio the highest channel count. For subtitle it's simply the
@@ -333,7 +338,8 @@ first subtitle stream.
 You can disable some of those defaults by using \f(CW\*(C`\-vn/\-an/\-sn\*(C'\fR options. For
 full manual control, use the \f(CW\*(C`\-map\*(C'\fR option, which disables the defaults just
 described.
-.PP
+.SH "OPTIONS"
+.IX Header "OPTIONS"
 All the numerical options, if not specified otherwise, accept in input
 a string representing a number, which may contain one of the
 \&\s-1SI\s0 unit prefixes, for example 'K', 'M', 'G'.
@@ -387,6 +393,10 @@ Match the stream by stream id (e.g. \s-1PID\s0 in MPEG-TS container).
 Matches streams with the metadata tag \fIkey\fR having the specified value. If
 \&\fIvalue\fR is not given, matches streams that contain the given tag with any
 value.
+.IP "\fBu\fR" 4
+.IX Item "u"
+Matches streams with usable configuration, the codec must be defined and the
+essential information such as video dimension or audio sample rate must be present.
 .Sp
 Note that in \fBavconv\fR, matching by metadata will only work properly for
 input files.
@@ -493,6 +503,8 @@ Set the logging level used by the library.
 .IX Item "verbose"
 .IP "\fBdebug\fR" 4
 .IX Item "debug"
+.IP "\fBtrace\fR" 4
+.IX Item "trace"
 .RE
 .RS 4
 .PD
@@ -829,16 +841,16 @@ abort decoding on minor error detection
 use \s-1MPEG\s0 quantizers instead of H.263
 .IP "\fB\-qsquish[:stream_specifier]\fR \fIfloat\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-qsquish[:stream_specifier] float (output,video)"
-how to keep quantizer between qmin and qmax (0 = clip, 1 = use differentiable function)
+deprecated, use encoder private options instead
 .IP "\fB\-rc_qmod_amp[:stream_specifier]\fR \fIfloat\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-rc_qmod_amp[:stream_specifier] float (output,video)"
-experimental quantizer modulation
+deprecated, use encoder private options instead
 .IP "\fB\-rc_qmod_freq[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-rc_qmod_freq[:stream_specifier] integer (output,video)"
-experimental quantizer modulation
+deprecated, use encoder private options instead
 .IP "\fB\-rc_eq[:stream_specifier]\fR \fIstring\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-rc_eq[:stream_specifier] string (output,video)"
-Set rate control equation. When computing the expression, besides the standard functions defined in the section 'Expression Evaluation', the following functions are available: bits2qp(bits), qp2bits(qp). Also the following constants are available: iTex pTex tex mv fCode iCount mcVar var isI isP isB avgQP qComp avgIITex avgPITex avgPPTex avgBPTex avgTex.
+deprecated, use encoder private options instead
 .IP "\fB\-maxrate[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIoutput,audio,video\fR\fB)\fR" 4
 .IX Item "-maxrate[:stream_specifier] integer (output,audio,video)"
 Set maximum bitrate tolerance (in bits/s). Requires bufsize to be set.
@@ -850,7 +862,7 @@ Set minimum bitrate tolerance (in bits/s). Most useful in setting up a \s-1CBR\s
 set ratecontrol buffer size (in bits)
 .IP "\fB\-rc_buf_aggressivity[:stream_specifier]\fR \fIfloat\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-rc_buf_aggressivity[:stream_specifier] float (output,video)"
-currently useless
+deprecated, use encoder private options instead
 .IP "\fB\-i_qfactor[:stream_specifier]\fR \fIfloat\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-i_qfactor[:stream_specifier] float (output,video)"
 \&\s-1QP\s0 factor between P\- and I\-frames
@@ -859,7 +871,7 @@ currently useless
 \&\s-1QP\s0 offset between P\- and I\-frames
 .IP "\fB\-rc_init_cplx[:stream_specifier]\fR \fIfloat\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-rc_init_cplx[:stream_specifier] float (output,video)"
-initial complexity for 1\-pass encoding
+deprecated, use encoder private options instead
 .IP "\fB\-dct[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-dct[:stream_specifier] integer (output,video)"
 \&\s-1DCT\s0 algorithm
@@ -1375,10 +1387,10 @@ use best rate distortion
 scene change threshold
 .IP "\fB\-lmin[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-lmin[:stream_specifier] integer (output,video)"
-minimum Lagrange factor (\s-1VBR\s0)
+deprecated, use encoder private options instead
 .IP "\fB\-lmax[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-lmax[:stream_specifier] integer (output,video)"
-maximum Lagrange factor (\s-1VBR\s0)
+deprecated, use encoder private options instead
 .IP "\fB\-nr[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-nr[:stream_specifier] integer (output,video)"
 noise reduction
@@ -1547,7 +1559,7 @@ noise preserving sum of squared differences
 .IP "\fB\-border_mask[:stream_specifier]\fR \fIfloat\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-border_mask[:stream_specifier] float (output,video)"
 .PD
-increase the quantizer for macroblocks close to borders
+deprecated, use encoder private options instead
 .IP "\fB\-mblmin[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-mblmin[:stream_specifier] integer (output,video)"
 minimum macroblock Lagrange factor (\s-1VBR\s0)
@@ -1659,9 +1671,6 @@ adjust sensitivity of b_frame_strategy 1
 .IX Item "-timecode_frame_start[:stream_specifier] integer (output,video)"
 .PD
 \&\s-1GOP\s0 timecode frame start number, in non-drop-frame format
-.IP "\fB\-request_channels[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIinput,audio\fR\fB)\fR" 4
-.IX Item "-request_channels[:stream_specifier] integer (input,audio)"
-set desired number of audio channels
 .IP "\fB\-channel_layout[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIinput/output,audio\fR\fB)\fR" 4
 .IX Item "-channel_layout[:stream_specifier] integer (input/output,audio)"
 Possible values:
@@ -1706,12 +1715,15 @@ Film
 .IP "\fBbt2020\fR" 4
 .IX Item "bt2020"
 \&\s-1BT.2020\s0
+.IP "\fBsmptest428_1\fR" 4
+.IX Item "smptest428_1"
+\&\s-1SMPTE ST 428\-1\s0
 .RE
 .RS 4
 .RE
 .IP "\fB\-color_trc[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIinput/output,video\fR\fB)\fR" 4
 .IX Item "-color_trc[:stream_specifier] integer (input/output,video)"
-color transfert characteristic
+color transfer characteristics
 .Sp
 Possible values:
 .RS 4
@@ -1723,10 +1735,10 @@ Possible values:
 Unspecified
 .IP "\fBgamma22\fR" 4
 .IX Item "gamma22"
-Gamma 2.2
+\&\s-1BT.470 M\s0
 .IP "\fBgamma28\fR" 4
 .IX Item "gamma28"
-Gamma 2.8
+\&\s-1BT.470 BG\s0
 .IP "\fBsmpte170m\fR" 4
 .IX Item "smpte170m"
 \&\s-1SMPTE 170 M\s0
@@ -1738,31 +1750,37 @@ Gamma 2.8
 Linear
 .IP "\fBlog\fR" 4
 .IX Item "log"
-\&\s-1SMPTE 240 M\s0
+Log
 .IP "\fBlog_sqrt\fR" 4
 .IX Item "log_sqrt"
-\&\s-1SMPTE 240 M\s0
+Log square root
 .IP "\fBiec61966_2_4\fR" 4
 .IX Item "iec61966_2_4"
-\&\s-1SMPTE 240 M\s0
+\&\s-1IEC 61966\-2\-4\s0
 .IP "\fBbt1361\fR" 4
 .IX Item "bt1361"
 \&\s-1BT.1361\s0
 .IP "\fBiec61966_2_1\fR" 4
 .IX Item "iec61966_2_1"
-\&\s-1SMPTE 240 M\s0
+\&\s-1IEC 61966\-2\-1\s0
 .IP "\fBbt2020_10bit\fR" 4
 .IX Item "bt2020_10bit"
 \&\s-1BT.2020 \- 10\s0 bit
 .IP "\fBbt2020_12bit\fR" 4
 .IX Item "bt2020_12bit"
 \&\s-1BT.2020 \- 12\s0 bit
+.IP "\fBsmptest2084\fR" 4
+.IX Item "smptest2084"
+\&\s-1SMPTE ST 2084\s0
+.IP "\fBsmptest428_1\fR" 4
+.IX Item "smptest428_1"
+\&\s-1SMPTE ST 428\-1\s0
 .RE
 .RS 4
 .RE
 .IP "\fB\-colorspace[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIinput/output,video\fR\fB)\fR" 4
 .IX Item "-colorspace[:stream_specifier] integer (input/output,video)"
-colorspace
+color space
 .Sp
 Possible values:
 .RS 4
@@ -1777,7 +1795,7 @@ Possible values:
 Unspecified
 .IP "\fBfcc\fR" 4
 .IX Item "fcc"
-FourCC
+\&\s-1FCC\s0
 .IP "\fBbt470bg\fR" 4
 .IX Item "bt470bg"
 \&\s-1BT.470 BG\s0
@@ -1819,10 +1837,36 @@ Unspecified
 .RE
 .IP "\fB\-chroma_sample_location[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIinput/output,video\fR\fB)\fR" 4
 .IX Item "-chroma_sample_location[:stream_specifier] integer (input/output,video)"
-.PD 0
+chroma sample location
+.Sp
+Possible values:
+.RS 4
+.IP "\fBunspecified\fR" 4
+.IX Item "unspecified"
+Unspecified
+.IP "\fBleft\fR" 4
+.IX Item "left"
+Left
+.IP "\fBcenter\fR" 4
+.IX Item "center"
+Center
+.IP "\fBtopleft\fR" 4
+.IX Item "topleft"
+Top-left
+.IP "\fBtop\fR" 4
+.IX Item "top"
+Top
+.IP "\fBbottomleft\fR" 4
+.IX Item "bottomleft"
+Bottom-left
+.IP "\fBbottom\fR" 4
+.IX Item "bottom"
+Bottom
+.RE
+.RS 4
+.RE
 .IP "\fB\-slices[:stream_specifier]\fR \fIinteger\fR \fB(\fR\fIoutput,video\fR\fB)\fR" 4
 .IX Item "-slices[:stream_specifier] integer (output,video)"
-.PD
 number of slices, used in parallelized encoding
 .IP "\fB\-thread_type[:stream_specifier]\fR \fIflags\fR \fB(\fR\fIinput/output,video\fR\fB)\fR" 4
 .IX Item "-thread_type[:stream_specifier] flags (input/output,video)"
@@ -2074,6 +2118,27 @@ allow non-standardized experimental variants
 .RE
 .RS 4
 .RE
+.IP "\fB\-max_ts_probe\fR \fIinteger\fR \fB(\fR\fIinput\fR\fB)\fR" 4
+.IX Item "-max_ts_probe integer (input)"
+maximum number of packets to read while waiting for the first timestamp
+.IP "\fB\-avoid_negative_ts\fR \fIinteger\fR \fB(\fR\fIoutput\fR\fB)\fR" 4
+.IX Item "-avoid_negative_ts integer (output)"
+shift timestamps so they start at 0
+.Sp
+Possible values:
+.RS 4
+.IP "\fBauto\fR" 4
+.IX Item "auto"
+enabled when required by target format
+.IP "\fBmake_non_negative\fR" 4
+.IX Item "make_non_negative"
+shift timestamps so they are non negative
+.IP "\fBmake_zero\fR" 4
+.IX Item "make_zero"
+shift timestamps so they start at 0
+.RE
+.RS 4
+.RE
 .SS "Main options"
 .IX Subsection "Main options"
 .IP "\fB\-f\fR \fIfmt\fR \fB(\fR\fIinput/output\fR\fB)\fR" 4
@@ -2090,6 +2155,10 @@ Overwrite output files without asking.
 .IP "\fB\-n (\fR\fIglobal\fR\fB)\fR" 4
 .IX Item "-n (global)"
 Immediately exit when output files already exist.
+.IP "\fB\-loop\fR \fInumber\fR \fB(\fR\fIinput\fR\fB)\fR" 4
+.IX Item "-loop number (input)"
+Set number of times input stream shall be looped. Loop 0 means no loop,
+loop \-1 means infinite loop.
 .IP "\fB\-c[:\fR\fIstream_specifier\fR\fB]\fR \fIcodec\fR \fB(\fR\fIinput/output,per\-stream\fR\fB)\fR" 4
 .IX Item "-c[:stream_specifier] codec (input/output,per-stream)"
 .PD 0
@@ -2255,6 +2324,9 @@ To extract all attachments to files determined by the \f(CW\*(C`filename\*(C'\fR
 Technical note \*(-- attachments are implemented as codec extradata, so this
 option can actually be used to extract extradata from any stream, not just
 attachments.
+.IP "\fB\-noautorotate\fR" 4
+.IX Item "-noautorotate"
+Disable automatically rotating video based on file metadata.
 .SS "Video Options"
 .IX Subsection "Video Options"
 .IP "\fB\-vframes\fR \fInumber\fR \fB(\fR\fIoutput\fR\fB)\fR" 4
@@ -2372,6 +2444,18 @@ abbreviations are recognized:
 .IP "\fBhd1080\fR" 4
 .IX Item "hd1080"
 1920x1080
+.IP "\fB2kdci\fR" 4
+.IX Item "2kdci"
+2048x1080
+.IP "\fB4kdci\fR" 4
+.IX Item "4kdci"
+4096x2160
+.IP "\fBuhd2160\fR" 4
+.IX Item "uhd2160"
+3840x2160
+.IP "\fBuhd4320\fR" 4
+.IX Item "uhd4320"
+7680x4320
 .RE
 .RS 4
 .RE
@@ -2479,6 +2563,16 @@ Use \s-1VDPAU \s0(Video Decode and Presentation \s-1API\s0 for Unix) hardware ac
 .IP "\fBdxva2\fR" 4
 .IX Item "dxva2"
 Use \s-1DXVA2 \s0(DirectX Video Acceleration) hardware acceleration.
+.IP "\fBqsv\fR" 4
+.IX Item "qsv"
+Use the Intel QuickSync Video acceleration for video transcoding.
+.Sp
+Unlike most other values, this option does not enable accelerated decoding (that
+is used automatically whenever a qsv decoder is selected), but accelerated
+transcoding, without copying the frames into the system memory.
+.Sp
+For it to work, both the decoder and the encoder must support \s-1QSV\s0 acceleration
+and no filters must be used.
 .RE
 .RS 4
 .Sp
@@ -2507,9 +2601,38 @@ is not specified, the value of the \fI\s-1DISPLAY\s0\fR environment variable is 
 .IX Item "dxva2"
 For \s-1DXVA2,\s0 this option should contain the number of the display adapter to use.
 If this option is not specified, the default adapter is used.
+.IP "\fBqsv\fR" 4
+.IX Item "qsv"
+For \s-1QSV,\s0 this option corresponds to the valus of MFX_IMPL_* . Allowed values
+are:
+.RS 4
+.IP "\fBauto\fR" 4
+.IX Item "auto"
+.PD 0
+.IP "\fBsw\fR" 4
+.IX Item "sw"
+.IP "\fBhw\fR" 4
+.IX Item "hw"
+.IP "\fBauto_any\fR" 4
+.IX Item "auto_any"
+.IP "\fBhw_any\fR" 4
+.IX Item "hw_any"
+.IP "\fBhw2\fR" 4
+.IX Item "hw2"
+.IP "\fBhw3\fR" 4
+.IX Item "hw3"
+.IP "\fBhw4\fR" 4
+.IX Item "hw4"
 .RE
 .RS 4
 .RE
+.RE
+.RS 4
+.RE
+.IP "\fB\-hwaccels\fR" 4
+.IX Item "-hwaccels"
+.PD
+List all hardware acceleration methods supported in this build of avconv.
 .SS "Audio Options"
 .IX Subsection "Audio Options"
 .IP "\fB\-aframes\fR \fInumber\fR \fB(\fR\fIoutput\fR\fB)\fR" 4
@@ -2846,6 +2969,8 @@ This option enables or disables accurate seeking in input files with the
 \&\fB\-ss\fR option. It is enabled by default, so seeking is accurate when
 transcoding. Use \fB\-noaccurate_seek\fR to disable it, which may be useful
 e.g. when copying some streams and transcoding the others.
+.SH "TIPS"
+.IX Header "TIPS"
 .IP "\(bu" 4
 For streaming at very low bitrate application, use a low frame rate
 and a small \s-1GOP\s0 size. This is especially true for RealVideo where
@@ -2875,6 +3000,8 @@ To have very low audio bitrates, reduce the sampling frequency
 To have a constant quality (but a variable bitrate), use the option
 \&'\-qscale n' when 'n' is between 1 (excellent quality) and 31 (worst
 quality).
+.SH "EXAMPLES"
+.IX Header "EXAMPLES"
 .SS "Preset files"
 .IX Subsection "Preset files"
 A preset file contains a sequence of \fIoption=value\fR pairs, one for
@@ -3053,7 +3180,8 @@ but you may use the \s-1QP2LAMBDA\s0 constant to easily convert from 'q' units:
 .Vb 1
 \&        avconv \-i src.ext \-lmax 21*QP2LAMBDA dst.ext
 .Ve
-.PP
+.SH "EXPRESSION EVALUATION"
+.IX Header "EXPRESSION EVALUATION"
 When evaluating an arithmetic expression, Libav uses an internal
 formula evaluator, implemented through the \fIlibavutil/eval.h\fR
 interface.
@@ -3252,7 +3380,8 @@ indication of the corresponding powers of 10 and of 2.
 .IP "\fBY\fR" 4
 .IX Item "Y"
 24 / 70
-.PP
+.SH "DECODERS"
+.IX Header "DECODERS"
 Decoders are configured elements in Libav which allow the decoding of
 multimedia streams.
 .PP
@@ -3268,7 +3397,8 @@ with the options \f(CW\*(C`\-\-enable\-decoder=\f(CIDECODER\f(CW\*(C'\fR /
 .PP
 The option \f(CW\*(C`\-decoders\*(C'\fR of the av* tools will display the list of
 enabled decoders.
-.PP
+.SH "AUDIO DECODERS"
+.IX Header "AUDIO DECODERS"
 A description of some of the currently available audio decoders
 follows.
 .SS "ac3"
@@ -3278,7 +3408,7 @@ follows.
 This decoder implements part of \s-1ATSC A/52:2010\s0 and \s-1ETSI TS 102 366,\s0 as well as
 the undocumented RealAudio 3 (a.k.a. dnet).
 .PP
-\s-1AC\-3\s0 Decoder Options
+\fI\s-1AC\-3\s0 Decoder Options\fR
 .IX Subsection "AC-3 Decoder Options"
 .IP "\fB\-drc_scale\fR \fIvalue\fR" 4
 .IX Item "-drc_scale value"
@@ -3300,7 +3430,8 @@ Loud sounds are fully compressed.  Soft sounds are enhanced.
 .RE
 .RS 4
 .RE
-.PP
+.SH "ENCODERS"
+.IX Header "ENCODERS"
 Encoders are configured elements in Libav which allow the encoding of
 multimedia streams.
 .PP
@@ -3316,7 +3447,8 @@ with the options \f(CW\*(C`\-\-enable\-encoder=\f(CIENCODER\f(CW\*(C'\fR /
 .PP
 The option \f(CW\*(C`\-encoders\*(C'\fR of the av* tools will display the list of
 enabled encoders.
-.PP
+.SH "AUDIO ENCODERS"
+.IX Header "AUDIO ENCODERS"
 A description of some of the currently available audio encoders
 follows.
 .SS "ac3 and ac3_fixed"
@@ -3885,6 +4017,8 @@ Very high quality \- corresponding to the wavpack \fB\-hh\fR option.
 Same as 3, but with extra processing enabled \- corresponding to the wavpack
 \&\fB\-x\fR option. I.e. 4 is the same as \fB\-x2\fR and 8 is the same as
 \&\fB\-x6\fR.
+.SH "VIDEO ENCODERS"
+.IX Header "VIDEO ENCODERS"
 .SS "libwebp"
 .IX Subsection "libwebp"
 libwebp WebP Image encoder wrapper
@@ -4061,9 +4195,6 @@ Noise reduction.
 .IP "\fBme_range           :  merange\fR" 4
 .IX Item "me_range : merange"
 Maximum range of the motion search in pixels.
-.IP "\fBme_method          :  me\fR" 4
-.IX Item "me_method : me"
-Full-pixel motion estimation method.
 .IP "\fBsubq               :  subme\fR" 4
 .IX Item "subq : subme"
 Sub-pixel motion estimation method.
@@ -4357,7 +4488,94 @@ Setting a higher \fBbits_per_mb\fR limit will improve the speed.
 .PP
 For the fastest encoding speed set the \fBqscale\fR parameter (4 is the
 recommended value) and do not set a size constraint.
+.SS "libkvazaar"
+.IX Subsection "libkvazaar"
+Kvazaar H.265/HEVC encoder.
 .PP
+Requires the presence of the libkvazaar headers and library during
+configuration. You need to explicitly configure the build with
+\&\fB\-\-enable\-libkvazaar\fR.
+.PP
+\fIOptions\fR
+.IX Subsection "Options"
+.IP "\fBb\fR" 4
+.IX Item "b"
+Set target video bitrate in bit/s and enable rate control.
+.IP "\fBkvazaar-params\fR" 4
+.IX Item "kvazaar-params"
+Set kvazaar parameters as a list of \fIname\fR=\fIvalue\fR pairs separated
+by commas (,). See kvazaar documentation for a list of options.
+.SS "\s-1QSV\s0 encoders"
+.IX Subsection "QSV encoders"
+The family of Intel QuickSync Video encoders (\s-1MPEG\-2, H.264\s0 and \s-1HEVC\s0)
+.PP
+The ratecontrol method is selected as follows:
+.IP "\(bu" 4
+When \fBglobal_quality\fR is specified, a quality-based mode is used.
+Specifically this means either
+.RS 4
+.IP "\-" 4
+\&\fI\s-1CQP\s0\fR \- constant quantizer scale, when the \fBqscale\fR codec flag is
+also set (the \fB\-qscale\fR avconv option).
+.IP "\-" 4
+\&\fI\s-1LA_ICQ\s0\fR \- intelligent constant quality with lookahead, when the
+\&\fBla_depth\fR option is also set.
+.IP "\-" 4
+\&\fI\s-1ICQ\s0\fR \*(-- intelligent constant quality otherwise.
+.RE
+.RS 4
+.RE
+.IP "\(bu" 4
+Otherwise, a bitrate-based mode is used. For all of those, you should specify at
+least the desired average bitrate with the \fBb\fR option.
+.RS 4
+.IP "\-" 4
+\&\fI\s-1LA\s0\fR \- \s-1VBR\s0 with lookahead, when the \fBla_depth\fR option is specified.
+.IP "\-" 4
+\&\fI\s-1VCM\s0\fR \- video conferencing mode, when the \fBvcm\fR option is set.
+.IP "\-" 4
+\&\fI\s-1CBR\s0\fR \- constant bitrate, when \fBmaxrate\fR is specified and equal to
+the average bitrate.
+.IP "\-" 4
+\&\fI\s-1VBR\s0\fR \- variable bitrate, when \fBmaxrate\fR is specified, but is higher
+than the average bitrate.
+.IP "\-" 4
+\&\fI\s-1AVBR\s0\fR \- average \s-1VBR\s0 mode, when \fBmaxrate\fR is not specified. This mode
+is further configured by the \fBavbr_accuracy\fR and
+\&\fBavbr_convergence\fR options.
+.RE
+.RS 4
+.RE
+.PP
+Note that depending on your system, a different mode than the one you specified
+may be selected by the encoder. Set the verbosity level to \fIverbose\fR or
+higher to see the actual settings used by the \s-1QSV\s0 runtime.
+.PP
+Additional libavcodec global options are mapped to \s-1MSDK\s0 options as follows:
+.IP "\(bu" 4
+\&\fBg/gop_size\fR \-> \fBGopPicSize\fR
+.IP "\(bu" 4
+\&\fBbf/max_b_frames\fR+1 \-> \fBGopRefDist\fR
+.IP "\(bu" 4
+\&\fBrc_init_occupancy/rc_initial_buffer_occupancy\fR \->
+\&\fBInitialDelayInKB\fR
+.IP "\(bu" 4
+\&\fBslices\fR \-> \fBNumSlice\fR
+.IP "\(bu" 4
+\&\fBrefs\fR \-> \fBNumRefFrame\fR
+.IP "\(bu" 4
+\&\fBb_strategy/b_frame_strategy\fR \-> \fBBRefType\fR
+.IP "\(bu" 4
+\&\fBcgop/CLOSED_GOP\fR codec flag \-> \fBGopOptFlag\fR
+.IP "\(bu" 4
+For the \fI\s-1CQP\s0\fR mode, the \fBi_qfactor/i_qoffset\fR and
+\&\fBb_qfactor/b_qoffset\fR set the difference between \fI\s-1QPP\s0\fR and \fI\s-1QPI\s0\fR,
+and \fI\s-1QPP\s0\fR and \fI\s-1QPB\s0\fR respectively.
+.IP "\(bu" 4
+Setting the \fBcoder\fR option to the value \fIvlc\fR will make the H.264
+encoder use \s-1CAVLC\s0 instead of \s-1CABAC.\s0
+.SH "DEMUXERS"
+.IX Header "DEMUXERS"
 Demuxers are configured elements in Libav which allow to read the
 multimedia streams from a particular type of file.
 .PP
@@ -4462,7 +4680,8 @@ This demuxer is used to demux \s-1ASF\s0 files and \s-1MMS\s0 network streams.
 .IP "\fB\-no_resync_search\fR \fIbool\fR" 4
 .IX Item "-no_resync_search bool"
 Do not try to resynchronize by looking for a certain optional start code.
-.PP
+.SH "MUXERS"
+.IX Header "MUXERS"
 Muxers are configured elements in Libav which allow writing
 multimedia streams to a particular type of file.
 .PP
@@ -4582,6 +4801,13 @@ Start the sequence from \fInumber\fR.
 .IX Item "-hls_base_url baseurl"
 Append \fIbaseurl\fR to every entry in the playlist.
 Useful to generate playlists with absolute paths.
+.IP "\fB\-hls_allow_cache\fR \fIallowcache\fR" 4
+.IX Item "-hls_allow_cache allowcache"
+Explicitly set whether the client \s-1MAY \\fIs0\fR\|(1) or \s-1MUST NOT \\fIs0\fR\|(0) cache media segments
+.IP "\fB\-hls_version\fR \fIversion\fR" 4
+.IX Item "-hls_version version"
+Set the protocol version. Enables or disables version-specific features
+such as the integer (version 2) or decimal \s-1EXTINF\s0 values (version 3).
 .SS "image2"
 .IX Subsection "image2"
 Image file muxer.
@@ -4783,7 +5009,6 @@ a short portion of the file. With this option set, there is no initial
 mdat atom, and the moov atom only describes the tracks but has
 a zero duration.
 .Sp
-Files written with this option set do not work in QuickTime.
 This option is implicitly set when writing ismv (Smooth Streaming) files.
 .IP "\fB\-movflags separate_moof\fR" 4
 .IX Item "-movflags separate_moof"
@@ -4804,6 +5029,18 @@ Disable Nero chapter markers (chpl atom).  Normally, both Nero chapters
 and a QuickTime chapter track are written to the file. With this option
 set, only the QuickTime chapter track will be written. Nero chapters can
 cause failures when the file is reprocessed with certain tagging programs.
+.IP "\fB\-movflags omit_tfhd_offset\fR" 4
+.IX Item "-movflags omit_tfhd_offset"
+Do not write any absolute base_data_offset in tfhd atoms. This avoids
+tying fragments to absolute byte positions in the file/streams.
+.IP "\fB\-movflags default_base_moof\fR" 4
+.IX Item "-movflags default_base_moof"
+Similarly to the omit_tfhd_offset, this flag avoids writing the
+absolute base_data_offset field in tfhd atoms, but does so by using
+the new default-base-is-moof flag instead. This flag is new from
+14496\-12:2012. This may make the fragments easier to parse in certain
+circumstances (avoiding basing track fragment location calculations
+on the implicit end of the previous track fragment).
 .PP
 Smooth Streaming content can be pushed in real time to a publishing
 point on \s-1IIS\s0 with this muxer. Example:
@@ -4813,28 +5050,33 @@ point on \s-1IIS\s0 with this muxer. Example:
 .Ve
 .SS "mp3"
 .IX Subsection "mp3"
-The \s-1MP3\s0 muxer writes a raw \s-1MP3\s0 stream with an ID3v2 header at the beginning and
-optionally an ID3v1 tag at the end. ID3v2.3 and ID3v2.4 are supported, the
-\&\f(CW\*(C`id3v2_version\*(C'\fR option controls which one is used. Setting
-\&\f(CW\*(C`id3v2_version\*(C'\fR to 0 will disable the ID3v2 header completely. The legacy
-ID3v1 tag is not written by default, but may be enabled with the
-\&\f(CW\*(C`write_id3v1\*(C'\fR option.
-.PP
-The muxer may also write a Xing frame at the beginning, which contains the
-number of frames in the file. It is useful for computing duration of \s-1VBR\s0 files.
-The Xing frame is written if the output stream is seekable and if the
-\&\f(CW\*(C`write_xing\*(C'\fR option is set to 1 (the default).
-.PP
-The muxer supports writing ID3v2 attached pictures (\s-1APIC\s0 frames). The pictures
-are supplied to the muxer in form of a video stream with a single packet. There
-can be any number of those streams, each will correspond to a single \s-1APIC\s0 frame.
-The stream metadata tags \fItitle\fR and \fIcomment\fR map to \s-1APIC
-\&\s0\fIdescription\fR and \fIpicture type\fR respectively. See
+The \s-1MP3\s0 muxer writes a raw \s-1MP3\s0 stream with the following optional features:
+.IP "\(bu" 4
+An ID3v2 metadata header at the beginning (enabled by default). Versions 2.3 and
+2.4 are supported, the \f(CW\*(C`id3v2_version\*(C'\fR private option controls which one is
+used (3 or 4). Setting \f(CW\*(C`id3v2_version\*(C'\fR to 0 disables the ID3v2 header
+completely.
+.Sp
+The muxer supports writing attached pictures (\s-1APIC\s0 frames) to the ID3v2 header.
+The pictures are supplied to the muxer in form of a video stream with a single
+packet. There can be any number of those streams, each will correspond to a
+single \s-1APIC\s0 frame.  The stream metadata tags \fItitle\fR and \fIcomment\fR map
+to \s-1APIC \s0\fIdescription\fR and \fIpicture type\fR respectively. See
 <\fBhttp://id3.org/id3v2.4.0\-frames\fR> for allowed picture types.
-.PP
+.Sp
 Note that the \s-1APIC\s0 frames must be written at the beginning, so the muxer will
 buffer the audio frames until it gets all the pictures. It is therefore advised
 to provide the pictures as soon as possible to avoid excessive buffering.
+.IP "\(bu" 4
+A Xing/LAME frame right after the ID3v2 header (if present). It is enabled by
+default, but will be written only if the output is seekable. The
+\&\f(CW\*(C`write_xing\*(C'\fR private option can be used to disable it.  The frame contains
+various information that may be useful to the decoder, like the audio duration
+or encoder delay.
+.IP "\(bu" 4
+A legacy ID3v1 tag at the end of the file (disabled by default). It may be
+enabled with the \f(CW\*(C`write_id3v1\*(C'\fR private option, but as its capabilities are
+very limited, its usage is not recommended.
 .PP
 Examples:
 .PP
@@ -4963,6 +5205,11 @@ is 1 second. A value of 0 will fill all segments, making pages as large as
 possible. A value of 1 will effectively use 1 packet-per-page in most
 situations, giving a small seek granularity at the cost of additional container
 overhead.
+.IP "\fB\-serial_offset\fR \fIvalue\fR" 4
+.IX Item "-serial_offset value"
+Serial value from which to set the streams serial number.
+Setting it to different and sufficiently large values ensures that the produced
+ogg files can be safely chained.
 .SS "segment"
 .IX Subsection "segment"
 Basic stream segmenter.
@@ -5012,7 +5259,8 @@ Wrap around segment index once it reaches \fIlimit\fR.
 .Vb 1
 \&        avconv \-i in.mkv \-c copy \-map 0 \-f segment \-list out.list out%03d.nut
 .Ve
-.PP
+.SH "INPUT DEVICES"
+.IX Header "INPUT DEVICES"
 Input devices are configured elements in Libav which allow to access
 the data coming from a multimedia device attached to your system.
 .PP
@@ -5294,6 +5542,9 @@ supported using \fB\-list_formats all\fR for Video4Linux2 devices.
 Some usage examples of the video4linux2 devices with avconv and avplay:
 .PP
 .Vb 2
+\&        # List supported formats for a video4linux2 device.
+\&        avplay \-f video4linux2 \-list_formats all /dev/video0
+\&        
 \&        # Grab and show the input of a video4linux2 device.
 \&        avplay \-f video4linux2 \-framerate 30 \-video_size hd720 /dev/video0
 \&        
@@ -5388,6 +5639,19 @@ For example:
 \&        avconv \-f x11grab \-follow_mouse centered \-show_region 1  \-r 25 \-s cif \-i :0.0 out.mpg
 .Ve
 .PP
+\fI\fIgrab_x\fI \fIgrab_y\fI AVOption\fR
+.IX Subsection "grab_x grab_y AVOption"
+.PP
+The syntax is:
+.PP
+.Vb 1
+\&        \-grab_x <x_offset> \-grab_y <y_offset>
+.Ve
+.PP
+Set the grabing region coordinates. The are expressed as offset from the top left
+corner of the X11 window. The default value is 0.
+.SH "OUTPUT DEVICES"
+.IX Header "OUTPUT DEVICES"
 Output devices are configured elements in Libav which allow to write
 multimedia data to an output device attached to your system.
 .PP
@@ -5413,7 +5677,8 @@ A description of the currently available output devices follows.
 .SS "sndio"
 .IX Subsection "sndio"
 sndio audio output device.
-.PP
+.SH "PROTOCOLS"
+.IX Header "PROTOCOLS"
 Protocols are configured elements in Libav which allow to access
 resources which require the use of a particular protocol.
 .PP
@@ -6032,7 +6297,7 @@ To play back the first stream announced on one the default IPv6 \s-1SAP\s0 multi
 .Ve
 .SS "tcp"
 .IX Subsection "tcp"
-Trasmission Control Protocol.
+Transmission Control Protocol.
 .PP
 The required syntax for a \s-1TCP\s0 url is:
 .PP
@@ -6178,7 +6443,8 @@ Timeout in ms.
 .IP "\fBlisten\fR" 4
 .IX Item "listen"
 Create the Unix socket in listening mode.
-.PP
+.SH "BITSTREAM FILTERS"
+.IX Header "BITSTREAM FILTERS"
 When you configure your Libav build, all the supported bitstream
 filters are enabled by default. You can list all available ones using
 the configure option \f(CW\*(C`\-\-list\-bsfs\*(C'\fR.
@@ -6250,6 +6516,8 @@ produce fully qualified \s-1JPEG\s0 images.
 .IX Subsection "noise"
 .SS "remove_extradata"
 .IX Subsection "remove_extradata"
+.SH "FILTERGRAPH DESCRIPTION"
+.IX Header "FILTERGRAPH DESCRIPTION"
 A filtergraph is a directed graph of connected filters. It can contain
 cycles, and there can be multiple links between a pair of
 filters. Each link has one input pad on one side connecting it to one
@@ -6356,7 +6624,8 @@ Here is a \s-1BNF\s0 description of the filtergraph syntax:
 \&        <FILTERCHAIN>      ::= <FILTER> [,<FILTERCHAIN>]
 \&        <FILTERGRAPH>      ::= [sws_flags=<flags>;] <FILTERCHAIN> [;<FILTERGRAPH>]
 .Ve
-.PP
+.SH "AUDIO FILTERS"
+.IX Header "AUDIO FILTERS"
 When you configure your Libav build, you can disable any of the
 existing filters using \-\-disable\-filters.
 The configure output will show the audio filters included in your
@@ -6437,6 +6706,9 @@ The expression which is evaluated for each frame to construct its timestamp.
 .PP
 The expression is evaluated through the eval \s-1API\s0 and can contain the following
 constants:
+.IP "\fB\s-1FRAME_RATE\s0\fR" 4
+.IX Item "FRAME_RATE"
+frame rate, only defined for constant frame-rate video
 .IP "\fB\s-1PTS\s0\fR" 4
 .IX Item "PTS"
 the presentation timestamp in input
@@ -6746,7 +7018,7 @@ the input.
 To fix a 5.1 \s-1WAV\s0 improperly encoded in \s-1AAC\s0's native channel order
 .PP
 .Vb 1
-\&        avconv \-i in.wav \-filter \*(Aqchannelmap=1|2|0|5|3|4:channel_layout=5.1\*(Aq out.wav
+\&        avconv \-i in.wav \-filter \*(Aqchannelmap=1|2|0|5|3|4:5.1\*(Aq out.wav
 .Ve
 .SS "compand"
 .IX Subsection "compand"
@@ -6946,7 +7218,8 @@ Increase input audio power by 6 decibels using fixed-point precision:
 .Vb 1
 \&        volume=volume=6dB:precision=fixed
 .Ve
-.PP
+.SH "AUDIO SOURCES"
+.IX Header "AUDIO SOURCES"
 Below is a description of the currently available audio sources.
 .SS "anullsrc"
 .IX Subsection "anullsrc"
@@ -7000,7 +7273,8 @@ The channel layout of the audio data, in the form that can be accepted by
 \&\f(CW\*(C`av_get_channel_layout()\*(C'\fR.
 .PP
 All the parameters need to be explicitly defined.
-.PP
+.SH "AUDIO SINKS"
+.IX Header "AUDIO SINKS"
 Below is a description of the currently available audio sinks.
 .SS "anullsink"
 .IX Subsection "anullsink"
@@ -7014,7 +7288,8 @@ be retrieved by the calling program, using the interface defined in
 \&\fIlibavfilter/buffersink.h\fR.
 .PP
 It does not accept any parameters.
-.PP
+.SH "VIDEO FILTERS"
+.IX Header "VIDEO FILTERS"
 When you configure your Libav build, you can disable any of the
 existing filters using \-\-disable\-filters.
 The configure output will show the video filters included in your
@@ -7373,6 +7648,17 @@ The timestamp, expressed in seconds. It's \s-1NAN\s0 if the input timestamp is u
 .Sp
 The default value of \fIx\fR and \fIy\fR is 0.
 .RE
+.IP "\fBdraw\fR" 4
+.IX Item "draw"
+Draw the text only if the expression evaluates as non-zero.
+The expression accepts the same variables \fIx, y\fR do.
+The default value is 1.
+.IP "\fBalpha\fR" 4
+.IX Item "alpha"
+Draw the text applying alpha blending. The value can
+be either a number between 0.0 and 1.0
+The expression accepts the same variables \fIx, y\fR do.
+The default value is 1.
 .IP "\fBfontsize\fR" 4
 .IX Item "fontsize"
 The font size to be used for drawing text.
@@ -8916,7 +9202,8 @@ Only deinterlace frames marked as interlaced.
 .Sp
 The default value is 0.
 .RE
-.PP
+.SH "VIDEO SOURCES"
+.IX Header "VIDEO SOURCES"
 Below is a description of the currently available video sources.
 .SS "buffer"
 .IX Subsection "buffer"
@@ -9131,7 +9418,8 @@ For example the following:
 .PP
 will generate a video with a duration of 5.3 seconds, with size
 176x144 and a framerate of 10 frames per second.
-.PP
+.SH "VIDEO SINKS"
+.IX Header "VIDEO SINKS"
 Below is a description of the currently available video sinks.
 .SS "buffersink"
 .IX Subsection "buffersink"
@@ -9145,7 +9433,8 @@ This sink is intended for programmatic use through the interface defined in
 Null video sink: do absolutely nothing with the input video. It is
 mainly useful as a template and for use in analysis / debugging
 tools.
-.PP
+.SH "METADATA"
+.IX Header "METADATA"
 Libav is able to dump metadata from media files into a simple UTF\-8\-encoded
 INI-like text file and then load it back using the metadata muxer/demuxer.
 .PP
@@ -9199,7 +9488,9 @@ A ffmetadata file might look like this:
 \&        title=multi\e
 \&        line
 .Ve
-.PP
+.SH "SEE ALSO"
+.IX Header "SEE ALSO"
 \&\fIavplay\fR\|(1), \fIavprobe\fR\|(1) and the Libav \s-1HTML\s0 documentation
-.PP
+.SH "AUTHORS"
+.IX Header "AUTHORS"
 The Libav developers

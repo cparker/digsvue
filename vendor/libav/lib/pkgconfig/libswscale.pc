@@ -1,12 +1,12 @@
-prefix=/app/vendor/libav
+prefix=/opt/apps
 exec_prefix=${prefix}
 libdir=${prefix}/lib
 includedir=${prefix}/include
 
 Name: libswscale
 Description: Libav image rescaling library
-Version: 3.0.0
-Requires: libavutil >= 54.3.0
+Version: 4.0.0
+Requires: libavutil >= 55.3.0
 Requires.private: 
 Conflicts:
 Libs: -L${libdir} -lswscale -lm

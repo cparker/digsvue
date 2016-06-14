@@ -34,17 +34,17 @@
  * Pixel format.
  *
  * @note
- * PIX_FMT_RGB32 is handled in an endian-specific manner. An RGBA
+ * AV_PIX_FMT_RGB32 is handled in an endian-specific manner. An RGBA
  * color is put together as:
  *  (A << 24) | (R << 16) | (G << 8) | B
  * This is stored as BGRA on little-endian CPU architectures and ARGB on
  * big-endian CPUs.
  *
  * @par
- * When the pixel format is palettized RGB (PIX_FMT_PAL8), the palettized
+ * When the pixel format is palettized RGB (AV_PIX_FMT_PAL8), the palettized
  * image data is stored in AVFrame.data[0]. The palette is transported in
  * AVFrame.data[1], is 1024 bytes long (256 4-byte entries) and is
- * formatted the same as in PIX_FMT_RGB32 described above (i.e., it is
+ * formatted the same as in AV_PIX_FMT_RGB32 described above (i.e., it is
  * also endian-specific). Note also that the individual RGB palette
  * components stored in AVFrame.data[1] should be in the range 0..255.
  * This is important as many custom PAL8 video codecs that were designed
@@ -54,11 +54,6 @@
  * For all the 8bit per pixel formats, an RGB32 palette is in data[1] like
  * for pal8. This palette is filled in automatically by the function
  * allocating the picture.
- *
- * @note
- * Make sure that all newly added big-endian formats have pix_fmt & 1 == 1
- * and that all newly added little-endian formats have pix_fmt & 1 == 0.
- * This allows simpler detection of big vs little-endian.
  */
 enum AVPixelFormat {
     AV_PIX_FMT_NONE = -1,
@@ -73,10 +68,10 @@ enum AVPixelFormat {
     AV_PIX_FMT_GRAY8,     ///<        Y        ,  8bpp
     AV_PIX_FMT_MONOWHITE, ///<        Y        ,  1bpp, 0 is white, 1 is black, in each byte pixels are ordered from the msb to the lsb
     AV_PIX_FMT_MONOBLACK, ///<        Y        ,  1bpp, 0 is black, 1 is white, in each byte pixels are ordered from the msb to the lsb
-    AV_PIX_FMT_PAL8,      ///< 8 bit with PIX_FMT_RGB32 palette
-    AV_PIX_FMT_YUVJ420P,  ///< planar YUV 4:2:0, 12bpp, full scale (JPEG), deprecated in favor of PIX_FMT_YUV420P and setting color_range
-    AV_PIX_FMT_YUVJ422P,  ///< planar YUV 4:2:2, 16bpp, full scale (JPEG), deprecated in favor of PIX_FMT_YUV422P and setting color_range
-    AV_PIX_FMT_YUVJ444P,  ///< planar YUV 4:4:4, 24bpp, full scale (JPEG), deprecated in favor of PIX_FMT_YUV444P and setting color_range
+    AV_PIX_FMT_PAL8,      ///< 8 bit with AV_PIX_FMT_RGB32 palette
+    AV_PIX_FMT_YUVJ420P,  ///< planar YUV 4:2:0, 12bpp, full scale (JPEG), deprecated in favor of AV_PIX_FMT_YUV420P and setting color_range
+    AV_PIX_FMT_YUVJ422P,  ///< planar YUV 4:2:2, 16bpp, full scale (JPEG), deprecated in favor of AV_PIX_FMT_YUV422P and setting color_range
+    AV_PIX_FMT_YUVJ444P,  ///< planar YUV 4:4:4, 24bpp, full scale (JPEG), deprecated in favor of AV_PIX_FMT_YUV444P and setting color_range
 #if FF_API_XVMC
     AV_PIX_FMT_XVMC_MPEG2_MC,///< XVideo Motion Acceleration via common packet passing
     AV_PIX_FMT_XVMC_MPEG2_IDCT,
@@ -100,7 +95,7 @@ enum AVPixelFormat {
     AV_PIX_FMT_GRAY16BE,  ///<        Y        , 16bpp, big-endian
     AV_PIX_FMT_GRAY16LE,  ///<        Y        , 16bpp, little-endian
     AV_PIX_FMT_YUV440P,   ///< planar YUV 4:4:0 (1 Cr & Cb sample per 1x2 Y samples)
-    AV_PIX_FMT_YUVJ440P,  ///< planar YUV 4:4:0 full scale (JPEG), deprecated in favor of PIX_FMT_YUV440P and setting color_range
+    AV_PIX_FMT_YUVJ440P,  ///< planar YUV 4:4:0 full scale (JPEG), deprecated in favor of AV_PIX_FMT_YUV440P and setting color_range
     AV_PIX_FMT_YUVA420P,  ///< planar YUV 4:2:0, 20bpp, (1 Cr & Cb sample per 2x2 Y & A samples)
 #if FF_API_VDPAU
     AV_PIX_FMT_VDPAU_H264,///< H.264 HW decoding with VDPAU, data[0] contains a vdpau_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers
@@ -206,11 +201,23 @@ enum AVPixelFormat {
     AV_PIX_FMT_YA16BE,       ///< 16bit gray, 16bit alpha (big-endian)
     AV_PIX_FMT_YA16LE,       ///< 16bit gray, 16bit alpha (little-endian)
 
-    AV_PIX_FMT_NB,        ///< number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
+    AV_PIX_FMT_GBRAP,        ///< planar GBRA 4:4:4:4 32bpp
+    AV_PIX_FMT_GBRAP16BE,    ///< planar GBRA 4:4:4:4 64bpp, big-endian
+    AV_PIX_FMT_GBRAP16LE,    ///< planar GBRA 4:4:4:4 64bpp, little-endian
+    /**
+     *  HW acceleration through QSV, data[3] contains a pointer to the
+     *  mfxFrameSurface1 structure.
+     */
+    AV_PIX_FMT_QSV,
+    /**
+     * HW acceleration though MMAL, data[3] contains a pointer to the
+     * MMAL_BUFFER_HEADER_T structure.
+     */
+    AV_PIX_FMT_MMAL,
 
-#if FF_API_PIX_FMT
-#include "old_pix_fmts.h"
-#endif
+    AV_PIX_FMT_D3D11VA_VLD,  ///< HW decoding through Direct3D11, Picture.data[3] contains a ID3D11VideoDecoderOutputView pointer
+
+    AV_PIX_FMT_NB,        ///< number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
 };
 
 #if AV_HAVE_BIGENDIAN
@@ -251,6 +258,8 @@ enum AVPixelFormat {
 #define AV_PIX_FMT_GBRP10    AV_PIX_FMT_NE(GBRP10BE,    GBRP10LE)
 #define AV_PIX_FMT_GBRP16    AV_PIX_FMT_NE(GBRP16BE,    GBRP16LE)
 
+#define AV_PIX_FMT_GBRAP16   AV_PIX_FMT_NE(GBRAP16BE,   GBRAP16LE)
+
 #define AV_PIX_FMT_YUVA420P9  AV_PIX_FMT_NE(YUVA420P9BE , YUVA420P9LE)
 #define AV_PIX_FMT_YUVA422P9  AV_PIX_FMT_NE(YUVA422P9BE , YUVA422P9LE)
 #define AV_PIX_FMT_YUVA444P9  AV_PIX_FMT_NE(YUVA444P9BE , YUVA444P9LE)
@@ -264,55 +273,22 @@ enum AVPixelFormat {
 #define AV_PIX_FMT_XYZ12      AV_PIX_FMT_NE(XYZ12BE, XYZ12LE)
 #define AV_PIX_FMT_NV20       AV_PIX_FMT_NE(NV20BE,  NV20LE)
 
-
-#if FF_API_PIX_FMT
-#define PixelFormat AVPixelFormat
-
-#define PIX_FMT_NE(be, le) AV_PIX_FMT_NE(be, le)
-
-#define PIX_FMT_RGB32   AV_PIX_FMT_RGB32
-#define PIX_FMT_RGB32_1 AV_PIX_FMT_RGB32_1
-#define PIX_FMT_BGR32   AV_PIX_FMT_BGR32
-#define PIX_FMT_BGR32_1 AV_PIX_FMT_BGR32_1
-
-#define PIX_FMT_GRAY16 AV_PIX_FMT_GRAY16
-#define PIX_FMT_RGB48  AV_PIX_FMT_RGB48
-#define PIX_FMT_RGB565 AV_PIX_FMT_RGB565
-#define PIX_FMT_RGB555 AV_PIX_FMT_RGB555
-#define PIX_FMT_RGB444 AV_PIX_FMT_RGB444
-#define PIX_FMT_BGR48  AV_PIX_FMT_BGR48
-#define PIX_FMT_BGR565 AV_PIX_FMT_BGR565
-#define PIX_FMT_BGR555 AV_PIX_FMT_BGR555
-#define PIX_FMT_BGR444 AV_PIX_FMT_BGR444
-
-#define PIX_FMT_YUV420P9  AV_PIX_FMT_YUV420P9
-#define PIX_FMT_YUV422P9  AV_PIX_FMT_YUV422P9
-#define PIX_FMT_YUV444P9  AV_PIX_FMT_YUV444P9
-#define PIX_FMT_YUV420P10 AV_PIX_FMT_YUV420P10
-#define PIX_FMT_YUV422P10 AV_PIX_FMT_YUV422P10
-#define PIX_FMT_YUV444P10 AV_PIX_FMT_YUV444P10
-#define PIX_FMT_YUV420P16 AV_PIX_FMT_YUV420P16
-#define PIX_FMT_YUV422P16 AV_PIX_FMT_YUV422P16
-#define PIX_FMT_YUV444P16 AV_PIX_FMT_YUV444P16
-
-#define PIX_FMT_GBRP9  AV_PIX_FMT_GBRP9
-#define PIX_FMT_GBRP10 AV_PIX_FMT_GBRP10
-#define PIX_FMT_GBRP16 AV_PIX_FMT_GBRP16
-#endif
-
 /**
   * Chromaticity coordinates of the source primaries.
   */
 enum AVColorPrimaries {
+    AVCOL_PRI_RESERVED0   = 0,
     AVCOL_PRI_BT709       = 1, ///< also ITU-R BT1361 / IEC 61966-2-4 / SMPTE RP177 Annex B
     AVCOL_PRI_UNSPECIFIED = 2,
     AVCOL_PRI_RESERVED    = 3,
-    AVCOL_PRI_BT470M      = 4,
+    AVCOL_PRI_BT470M      = 4, ///< also FCC Title 47 Code of Federal Regulations 73.682 (a)(20)
+
     AVCOL_PRI_BT470BG     = 5, ///< also ITU-R BT601-6 625 / ITU-R BT1358 625 / ITU-R BT1700 625 PAL & SECAM
     AVCOL_PRI_SMPTE170M   = 6, ///< also ITU-R BT601-6 525 / ITU-R BT1358 525 / ITU-R BT1700 NTSC
     AVCOL_PRI_SMPTE240M   = 7, ///< functionally identical to above
-    AVCOL_PRI_FILM        = 8,
+    AVCOL_PRI_FILM        = 8, ///< colour filters using Illuminant C
     AVCOL_PRI_BT2020      = 9, ///< ITU-R BT2020
+    AVCOL_PRI_SMPTEST428_1 = 10, ///< SMPTE ST 428-1 (CIE 1931 XYZ)
     AVCOL_PRI_NB,              ///< Not part of ABI
 };
 
@@ -320,6 +296,7 @@ enum AVColorPrimaries {
  * Color Transfer Characteristic.
  */
 enum AVColorTransferCharacteristic {
+    AVCOL_TRC_RESERVED0    = 0,
     AVCOL_TRC_BT709        = 1,  ///< also ITU-R BT1361
     AVCOL_TRC_UNSPECIFIED  = 2,
     AVCOL_TRC_RESERVED     = 3,
@@ -335,6 +312,8 @@ enum AVColorTransferCharacteristic {
     AVCOL_TRC_IEC61966_2_1 = 13, ///< IEC 61966-2-1 (sRGB or sYCC)
     AVCOL_TRC_BT2020_10    = 14, ///< ITU-R BT2020 for 10 bit system
     AVCOL_TRC_BT2020_12    = 15, ///< ITU-R BT2020 for 12 bit system
+    AVCOL_TRC_SMPTEST2084  = 16, ///< SMPTE ST 2084 for 10, 12, 14 and 16 bit systems
+    AVCOL_TRC_SMPTEST428_1 = 17, ///< SMPTE ST 428-1
     AVCOL_TRC_NB,                ///< Not part of ABI
 };
 
@@ -342,11 +321,11 @@ enum AVColorTransferCharacteristic {
  * YUV colorspace type.
  */
 enum AVColorSpace {
-    AVCOL_SPC_RGB         = 0,
+    AVCOL_SPC_RGB         = 0,  ///< order of coefficients is actually GBR, also IEC 61966-2-1 (sRGB)
     AVCOL_SPC_BT709       = 1,  ///< also ITU-R BT1361 / IEC 61966-2-4 xvYCC709 / SMPTE RP177 Annex B
     AVCOL_SPC_UNSPECIFIED = 2,
     AVCOL_SPC_RESERVED    = 3,
-    AVCOL_SPC_FCC         = 4,
+    AVCOL_SPC_FCC         = 4,  ///< FCC Title 47 Code of Federal Regulations 73.682 (a)(20)
     AVCOL_SPC_BT470BG     = 5,  ///< also ITU-R BT601-6 625 / ITU-R BT1358 625 / ITU-R BT1700 625 PAL & SECAM / IEC 61966-2-4 xvYCC601
     AVCOL_SPC_SMPTE170M   = 6,  ///< also ITU-R BT601-6 525 / ITU-R BT1358 525 / ITU-R BT1700 NTSC / functionally identical to above
     AVCOL_SPC_SMPTE240M   = 7,
