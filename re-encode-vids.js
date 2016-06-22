@@ -59,8 +59,8 @@ module.exports = (function() {
 
     var vids = fs.readdirSync(newAVIsDir)
     console.log('', vids.length, 'new videos to re-encode');
-    
-    var encodeCommand = '/app/vendor/libav/bin/avconv -y -i $INPUT -vcodec libx264 -vprofile high -preset slow -b:v 100k -maxrate 100k -bufsize 200k -r 4 $OUTPUT';
+
+    var encodeCommand = '/app/vendor/libav/bin/avconv -y -i $INPUT -vcodec libx264 -preset slow -b:v 100k -maxrate 100k -bufsize 200k -r 4 $OUTPUT';
     var animatedGifCommand = "/app/ffmpeg -t 20 -i $INPUT -r 1 -vf 'select=gt(scene\\,0.1),scale=350:-1' -gifflags +transdiff -y $OUTPUT";
     var simpleOneFrameCommand = "/app/ffmpeg -y -i $INPUT -vframes 1 -vf 'scale=350:-1' $OUTPUT";
 
