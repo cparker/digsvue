@@ -11,11 +11,14 @@ let s3 = require('s3')
 let argv = require('minimist')(process.argv.slice(2))
 
 module.exports = (function() {
-  const s3Bucket = 'front-door'
+  const s3Bucket = 'digsvue'
 
   let s3AVIsDir = argv.s3AVIsDir || 'new-uploaded-avis'
-  let localBaseDir = argv.localBaseDir || '/opt/house-monitor';
-  var newAVIsDir = `${localBaseDir}/new-avis`;
+  let localBaseDir = argv.localBaseDir || './work'
+  let newAVIsDir = `${localBaseDir}/new-avis`
+  let encodedMP4sDir = `${localBaseDir}/encoded-mp4s`
+  let stillPicDir = `${localBaseDir}/stillPicDir`
+
 
   var unlink = Q.nfbind(fs.unlink);
   var execPromise = Q.denodeify(exec);
@@ -56,15 +59,10 @@ module.exports = (function() {
     console.log('', vids.length, 'new videos to re-encode');
   })
 
-  /*
 
-
-
-
-
-  var encodeCommand = '/opt/apps/bin/avconv -y -i $INPUT -vcodec libx264 -vprofile high -preset slow -b:v 100k -maxrate 100k -bufsize 200k -r 4 $OUTPUT';
-  var animatedGifCommand = "/home/ubuntu/bin/ffmpeg -t 20 -i $INPUT -r 1 -vf 'select=gt(scene\\,0.1),scale=350:-1' -gifflags +transdiff -y $OUTPUT";
-  var simpleOneFrameCommand = "/home/ubuntu/bin/ffmpeg -y -i $INPUT -vframes 1 -vf 'scale=350:-1' $OUTPUT";
+  var encodeCommand = '/app/vendor/libav/bin/avconv -y -i $INPUT -vcodec libx264 -vprofile high -preset slow -b:v 100k -maxrate 100k -bufsize 200k -r 4 $OUTPUT';
+  var animatedGifCommand = "/app/ffmpeg -t 20 -i $INPUT -r 1 -vf 'select=gt(scene\\,0.1),scale=350:-1' -gifflags +transdiff -y $OUTPUT";
+  var simpleOneFrameCommand = "/app/ffmpeg -y -i $INPUT -vframes 1 -vf 'scale=350:-1' $OUTPUT";
 
   var logExecIO = function(io) {
     console.log('STDIN: ', io[0]);
@@ -76,35 +74,42 @@ module.exports = (function() {
   };
 
   var commandPromises = _.flatten(_.map(vids, function(vid) {
+    console.log('working on ', vid)
 
     var newVidMp4Name = vid.replace(/^(.*?)\.avi$/, '$1.mp4');
     var newVidGifName = vid.replace(/^(.*?)\.avi$/, '$1.gif');
+    console.log('newVidMp4Name ', newVidMp4Name, ' newVidGifName ', newVidGifName)
 
     var reEncodeCommand = encodeCommand
-      .replace('$INPUT', appDir + newVidsDir + '/' + vid)
-      .replace('$OUTPUT', appDir + liveVidsDir + '/' + newVidMp4Name);
+      .replace('$INPUT', `${newAVIsDir}/${vid}`)
+      .replace('$OUTPUT', `${encodedMP4sDir}/${newVidMp4Name}`)
+
+    console.log('reEncodeCommand', reEncodeCommand)
 
     var aniGifFinalCommand = animatedGifCommand
-      .replace('$INPUT', appDir + liveVidsDir + '/' + newVidMp4Name)
-      .replace('$OUTPUT', appDir + liveVidsDir + '/' + newVidGifName);
+      .replace('$INPUT', `${encodedMP4sDir}/${newVidMp4Name}`)
+      .replace('$OUTPUT', `${stillPicDir}/${newVidGifName}`)
+
+    console.log('aniGifFinalCommand', aniGifFinalCommand)
 
     var simpleOneFrameFinalCommand = simpleOneFrameCommand
-      .replace('$INPUT', appDir + liveVidsDir + '/' + newVidMp4Name)
-      .replace('$OUTPUT', appDir + liveVidsDir + '/' + newVidGifName);
+      .replace('$INPUT', `${encodedMP4sDir}/${newVidMp4Name}`)
+      .replace('$OUTPUT', `${stillPicDir}/${newVidGifName}`)
 
+    console.log('simpleOneFrameCommand', simpleOneFrameCommand)
 
     var reEncodeFunc = function() {
       console.log('running 1.', reEncodeCommand);
       return execPromise(reEncodeCommand)
         .then(logExecIO)
         .then(function() {
-          console.log('deleting source file');
-          unlink(appDir + newVidsDir + '/' + vid);
+          console.log('deleting source file')
+          unlink(`${encodedMP4sDir}/${vid}`)
         })
         .catch(logExecErr)
         .then(function() {
           console.log('deleting source file');
-          unlink(appDir + newVidsDir + '/' + vid);
+          unlink(`${encodedMP4sDir}/${vid}`)
         })
     };
 
@@ -146,7 +151,6 @@ module.exports = (function() {
   // now execute the promises sequentially
   commandPromises.reduce(Q.when, Q('initial'));
 
-  */
 
 
 })();

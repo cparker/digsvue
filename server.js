@@ -2,6 +2,7 @@
 
 'use strict'
 
+const exec = require('child_process').exec
 const restClient = require('request-promise')
 const express = require('express')
 const morgan = require('morgan')
@@ -20,103 +21,123 @@ const nodemailer = require('nodemailer')
 
 module.exports = (() => {
 
-    const serviceURL = '/mydata'
-    const dbName = 'databaseName'
-    const defaultDBConnection = `mongodb://localhost/${dbName}`
-    const mongoCollectionName = 'collectionName'
+  const serviceURL = '/mydata'
+  const triggerReEncode = '/triggerReEncode'
+  const dbName = 'databaseName'
+  const defaultDBConnection = `mongodb://localhost/${dbName}`
+  const mongoCollectionName = 'collectionName'
 
-    let mongoClient = bluebird.promisifyAll(mongodb).MongoClient;
+  let execPromise = Q.denodeify(exec)
 
-    let port = process.env.PORT || 5000
+  let mongoClient = bluebird.promisifyAll(mongodb).MongoClient;
 
-    let app = express()
+  let port = process.env.PORT || 5000
 
-    let dbURI = process.env.MONGODB_URI || defaultDBConnection
-    let db
+  let app = express()
 
-    /*
-    console.log('dbURI', dbURI)
-    mongoClient.connect(dbURI)
-        .then(ddb => {
-            console.log('connected to mongo')
-            db = ddb
-        })
-        .catch(er => {
-            console.log('error connecting to mongo', er)
-        })
-    */
+  let dbURI = process.env.MONGODB_URI || defaultDBConnection
+  let db
 
-    app.use(function(req, res, next) {
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, contentType");
-        res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
-        next();
-    });
+  /*
+  console.log('dbURI', dbURI)
+  mongoClient.connect(dbURI)
+      .then(ddb => {
+          console.log('connected to mongo')
+          db = ddb
+      })
+      .catch(er => {
+          console.log('error connecting to mongo', er)
+      })
+  */
 
-    app.use(express.static('.'))
-    app.use(bodyParser.json())
-    app.use(bodyParser.urlencoded({
-        extended: true
-    }))
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, contentType");
+    res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
+    next();
+  });
 
-    let getData = (req, res) => {
-        db.collection(mongoCollectionName)
-            .find({})
-            .sort({
-                dateTime: -1
-            })
-            .limit(1)
-            .toArray()
-            .then(queryResult => {
-                if (!queryResult || queryResult.length <= 0) {
-                    res.status(404).json({
-                        "result": "no data for you"
-                    })
-                } else {
-                    res.json({
-                        data: queryResult
-                    })
-                }
-            })
-            .catch(err => {
-                console.log("error", err)
-                res.status(500).json({
-                    "error": err
-                })
-            })
-    }
+  app.use(express.static('.'))
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({
+    extended: true
+  }))
 
-
-    let setData = (req, res) => {
-        console.log('body ', req.body);
-        if (!req.body) {
-            console.log('body is missing')
-            res.status(500).json({
-                "error": "missing body"
-            })
-            return false
+  let getData = (req, res) => {
+    db.collection(mongoCollectionName)
+      .find({})
+      .sort({
+        dateTime: -1
+      })
+      .limit(1)
+      .toArray()
+      .then(queryResult => {
+        if (!queryResult || queryResult.length <= 0) {
+          res.status(404).json({
+            "result": "no data for you"
+          })
+        } else {
+          res.json({
+            data: queryResult
+          })
         }
+      })
+      .catch(err => {
+        console.log("error", err)
+        res.status(500).json({
+          "error": err
+        })
+      })
+  }
 
-        req.body.dateTime = moment().toDate()
-        db.collection(mongoCollectionName).insertOne(req.body)
-            .then((insertResult) => {
-                res.status(201).json({
-                    "insertResult": insertResult
-                })
-            })
-            .catch((er) => {
-                console.log('error on insert', er)
-                res.status(500).json({
-                    "error": er
-                })
-            })
+
+  let setData = (req, res) => {
+    console.log('body ', req.body);
+    if (!req.body) {
+      console.log('body is missing')
+      res.status(500).json({
+        "error": "missing body"
+      })
+      return false
     }
 
-    app.post(serviceURL, setData)
-    app.get(serviceURL, getData)
+    req.body.dateTime = moment().toDate()
+    db.collection(mongoCollectionName).insertOne(req.body)
+      .then((insertResult) => {
+        res.status(201).json({
+          "insertResult": insertResult
+        })
+      })
+      .catch((er) => {
+        console.log('error on insert', er)
+        res.status(500).json({
+          "error": er
+        })
+      })
+  }
 
-    app.listen(port, '0.0.0.0', () => {
-        console.log(`listening on ${port}`)
-    })
+  let handleReEncode = (req, res) => {
+    execPromise('./re-encode-vids.js')
+      .then(() => {
+        console.log('finished re-encode')
+        res.status(200).json({
+          "OK": "encode done"
+        })
+      })
+      .catch(er => {
+        console.log('error', er)
+        res.status(500).json({
+          "error": er
+        })
+      })
+  }
+
+  app.post(serviceURL, setData)
+  app.post(triggerReEncode, handleReEncode)
+  app.get(serviceURL, getData)
+
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`listening on ${port}`)
+  })
 
 })()
