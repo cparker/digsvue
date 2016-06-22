@@ -17,7 +17,7 @@ module.exports = (function() {
   let writeFile = Q.nfbind(fs.writeFile)
   var readdir = Q.nfbind(fs.readdir);
 
-  let sourceBaseDir = argv.sourceBaseDir || '/opt/digsvue'
+  let sourceBaseDir = argv.sourceBaseDir || '/opt/house-monitor'
   var motionContentDir = argv.motionContentDir || `${sourceBaseDir}/motion-files`
   var lastCheckDir = argv.lastCheckDir || `${sourceBaseDir}`
   var lastCheckFile = 'lastCheck.json'
