@@ -10,7 +10,7 @@ let s3 = require('s3')
 
 module.exports = (function() {
 
-  const s3Bucket = 'front-door'
+  const s3Bucket = 'digsvue'
   const newAVIDestFolder = 'new-uploaded-avis'
   const newPICDestFolder = 'new-uploaded-pics'
 
