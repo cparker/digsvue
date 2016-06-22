@@ -1,2 +1,28 @@
-front door camera
-8
+<html lang="en" ng-app="multiView">
+
+    <head>
+        <script src="bower_components/underscore/underscore-min.js"></script>
+        <script src="node_modules/lodash/index.js"></script>
+        <script src="bower_components/angular/angular.js"></script>
+        <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+        <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+        <script src="bower_components/videogular/videogular.js"></script>
+        <script src="bower_components/videogular-controls/vg-controls.js"></script>
+        <script src="bower_components/videogular-poster/vg-poster.js"></script>
+        <script src="bower_components/videogular-overlay-play/vg-overlay-play.js"></script>
+        <script src="bower_components/moment/moment.js"></script>
+        <script src="main.js"></script>
+
+        <link href="https://fonts.googleapis.com/css?family=Heebo:100" rel="stylesheet">
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="bower_components/videogular-themes-default/videogular.css">
+    </head>
+
+    <body ng-controller="AppCtrl">
+        <!--
+        <a ui-sref="home">Home</a>
+        <a ui-sref="front-door">Front Door</a> -->
+        <div ui-view></div>
+    </body>
+
+</html>
