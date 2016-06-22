@@ -20,7 +20,7 @@ module.exports = (function() {
   let sourceBaseDir = argv.sourceBaseDir || '/opt/house-monitor'
   var motionContentDir = argv.motionContentDir || `${sourceBaseDir}/motion-files`
   var lastCheckDir = argv.lastCheckDir || `${sourceBaseDir}`
-  var lastCheckFile = 'lastCheck.json'
+  var lastCheckFile = '.digsvue.lastCheck.json'
 
   // examine all the files motion (camera app) is writing
   let motionFiles = fs.readdirSync(motionContentDir)
