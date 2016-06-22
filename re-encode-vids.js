@@ -24,7 +24,8 @@ module.exports = (function() {
   var execPromise = Q.denodeify(exec);
 
   // get s3 keys
-  let s3info = JSON.parse(fs.readFileSync('.s3keys.json'))
+  //let s3info = JSON.parse(fs.readFileSync('.s3keys.json'))
+  let s3Info = process.env.S3_INFO
 
   // for talking to s3
   let s3client = s3.createClient({
