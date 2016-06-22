@@ -21,6 +21,7 @@
     "nodemailer": "^2.4.2",
     "q": "^1.4.1",
     "request-promise": "^3.0.0",
+    "s3": "^4.4.0",
     "ui-router": "^1.0.0-alpha.3",
     "underscore": "^1.8.3"
   },
