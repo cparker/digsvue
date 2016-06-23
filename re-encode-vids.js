@@ -160,13 +160,13 @@ module.exports = (function() {
       let newMP4s = _.map(fs.readdirSync(encodedMP4sDir), f => {
         return {
           path: `${encodedMP4sDir}/${f}`,
-          name : file
+          name : f
         }
       })
       let newStillPics = _.map(fs.readdirSync(stillPicDir), f => {
         return {
           path : `${stillPicDir}/${f}`,
-          name: file
+          name: f
         }
       })
       let filesToUpload = newMP4s.concat(newStillPics)
