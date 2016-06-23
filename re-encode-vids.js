@@ -157,8 +157,12 @@ module.exports = (function() {
 
     let uploadFunc = () => {
       console.log('running 4. uploading')
-      let newMP4s = fs.readdirSync(encodedMP4sDir)
-      let newStillPics = fs.readdirSync(stillPicDir)
+      let newMP4s = _.map(fs.readdirSync(encodedMP4sDir), f => {
+        return `${encodedMP4sDir}/${f}`
+      })
+      let newStillPics = _.map(fs.readdirSync(stillPicDir), f => {
+        return `${stillPicDir}/${f}`
+      })
       let filesToUpload = newMP4s.concat(newStillPics)
       console.log('filesToUpload', filesToUpload)
       _.each(filesToUpload, file => {
