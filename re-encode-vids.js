@@ -30,8 +30,8 @@ module.exports = (function() {
   console.log('s3info', s3info)
 
   // make some dirs
-  f2.mkdirSync(encodedMP4sDir)
-  f2.mkdirSync(stillPicDir)
+  fs.mkdirSync(encodedMP4sDir)
+  fs.mkdirSync(stillPicDir)
 
   // for talking to s3
   let s3client = s3.createClient({
@@ -190,6 +190,7 @@ module.exports = (function() {
         console.log('starting uploads')
         uploadFunc()
       })
+
   })
 
 
