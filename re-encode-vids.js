@@ -170,7 +170,7 @@ module.exports = (function() {
           localFile: file,
           s3Params: {
             Bucket: s3Bucket,
-            Key: s3LiveDir
+            Key: `s3LiveDir/${file}`
           }
         }
 
