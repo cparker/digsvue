@@ -174,13 +174,13 @@ module.exports = (function() {
 
         uploader.on('progress', () => {
           let progressPct = ((uploader.progressAmount / uploader.progressTotal) * 100).toFixed(2)
-          console.log(`${name} ${progressPct}`)
+          console.log(`${file} ${progressPct}`)
         })
         uploader.on('error', (err) => {
-          console.log(`error on ${name}`, err)
+          console.log(`error on ${file}`, err)
         })
         uploader.on('end', () => {
-          console.log(`${name} done`)
+          console.log(`${file} done`)
         })
       })
     }
