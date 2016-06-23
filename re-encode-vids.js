@@ -70,13 +70,13 @@ module.exports = (function() {
       }
     })
     let s3DeleteRemoteFiles = {
-      s3Params: {
-        Bucket: s3Bucket,
-        Delete: {
-          Objects: delObjects
-        }
+      Bucket: s3Bucket,
+      Delete: {
+        Objects: delObjects
       }
     }
+    console.log('deleteRemoteFiles', s3DeleteRemoteFiles)
+
     let deleter = s3client.deleteObjects(s3DeleteRemoteFiles)
     deleter.on('end', () => {
       console.log('deleted files')
