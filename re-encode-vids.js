@@ -159,7 +159,7 @@ module.exports = (function() {
       console.log('running 4. uploading')
       let newMP4s = fs.readdirSync(encodedMP4sDir)
       let newStillPics = fs.readdirSync(stillPicDir)
-      let filesToUpload = newMP4s.append(newStillPics)
+      let filesToUpload = newMP4s.concat(newStillPics)
       console.log('filesToUpload', filesToUpload)
       _.each(filesToUpload, file => {
         let s3UploadFileParams = {
