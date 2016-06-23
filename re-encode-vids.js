@@ -149,46 +149,52 @@ module.exports = (function() {
           .catch(logExecErr);
       };
 
-      let uploadFunc = () => {
-        console.log('running 4. uploading')
-        let newMP4s = fs.readdirSync(encodedMP4sDir)
-        let newStillPics = rs.readdirSync(stillPicDir)
-        let filesToUpload = newMP4s.append(newStillPics)
-        console.log('filesToUpload', filesToUpload)
-        _.each(filesToUpload, file => {
-          let s3UploadFileParams = {
-            localFile: file,
-            s3Params: {
-              Bucket: s3Bucket,
-              Prefix: s3LiveDir
-            }
-          }
-
-          let uploader = s3client.uploadFile(s3UploadFileParams)
-
-          uploader.on('progress', () => {
-            let progressPct = ((uploader.progressAmount / uploader.progressTotal) * 100).toFixed(2)
-            console.log(`${name} ${progressPct}`)
-          })
-          uploader.on('error', (err) => {
-            console.log(`error on ${name}`, err)
-          })
-          uploader.on('end', () => {
-            console.log(`${name} done`)
-          })
-        })
-      }
 
       // returning an array, which gets flattened
       return [reEncodeFunc, makeGifFunc];
 
     }));
 
+    let uploadFunc = () => {
+      console.log('running 4. uploading')
+      let newMP4s = fs.readdirSync(encodedMP4sDir)
+      let newStillPics = rs.readdirSync(stillPicDir)
+      let filesToUpload = newMP4s.append(newStillPics)
+      console.log('filesToUpload', filesToUpload)
+      _.each(filesToUpload, file => {
+        let s3UploadFileParams = {
+          localFile: file,
+          s3Params: {
+            Bucket: s3Bucket,
+            Prefix: s3LiveDir
+          }
+        }
+
+        let uploader = s3client.uploadFile(s3UploadFileParams)
+
+        uploader.on('progress', () => {
+          let progressPct = ((uploader.progressAmount / uploader.progressTotal) * 100).toFixed(2)
+          console.log(`${name} ${progressPct}`)
+        })
+        uploader.on('error', (err) => {
+          console.log(`error on ${name}`, err)
+        })
+        uploader.on('end', () => {
+          console.log(`${name} done`)
+        })
+      })
+    }
+
     // now execute the promises sequentially
     commandPromises.reduce(Q.when, Q('initial'))
       .then(() => {
-        console.log('starting uploads')
-        uploadFunc()
+        try {
+          console.log('before starting uploads')
+          uploadFunc()
+          console.log('after starting uploads')
+        } catch (Err) {
+          console.log('caught', Err)
+        }
       })
 
   })
