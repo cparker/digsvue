@@ -64,18 +64,22 @@ module.exports = (function() {
     console.log('new AVIs downloaded from s3, deleting remote files')
 
     var vids = fs.readdirSync(newAVIsDir)
-    _.each(vids, v => {
-      let s3DeleteRemoteFiles = {
-        s3Params: {
-          Bucket: s3Bucket,
-          Prefix: `${s3AVIsDir}/${v}`
+    let delObjects = _.map(vids, v => {
+      return {
+        Key: `${s3AVIsDir}/${v}`
+      }
+    })
+    let s3DeleteRemoteFiles = {
+      s3Params: {
+        Bucket: s3Bucket,
+        Delete: {
+          Objects: delObjects
         }
       }
-      let deleter = s3client.deleteObjects(s3DeleteRemoteFiles)
-      deleter.on('end', () => {
-        console.log('deleted', `${s3AVIsDir}/${v}`)
-      })
-
+    }
+    let deleter = s3client.deleteObjects(s3DeleteRemoteFiles)
+    deleter.on('end', () => {
+      console.log('deleted files')
     })
 
     console.log('', vids.length, 'new videos to re-encode');
