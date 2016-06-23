@@ -30,6 +30,7 @@ module.exports = (function() {
   console.log('s3info', s3info)
 
   // make some dirs
+  fs.mkdirSync(localBaseDir)
   fs.mkdirSync(encodedMP4sDir)
   fs.mkdirSync(stillPicDir)
 
@@ -153,29 +154,28 @@ module.exports = (function() {
         let newMP4s = fs.readdirSync(encodedMP4sDir)
         let newStillPics = rs.readdirSync(stillPicDir)
         let filesToUpload = newMP4s.append(newStillPics)
+        console.log('filesToUpload', filesToUpload)
         _.each(filesToUpload, file => {
-          return () => {
-            let s3UploadFileParams = {
-              localFile: file,
-              s3Params: {
-                Bucket: s3Bucket,
-                Prefix: s3LiveDir
-              }
+          let s3UploadFileParams = {
+            localFile: file,
+            s3Params: {
+              Bucket: s3Bucket,
+              Prefix: s3LiveDir
             }
-
-            let uploader = s3client.uploadFile(s3UploadFileParams)
-
-            uploader.on('progress', () => {
-              let progressPct = ((uploader.progressAmount / uploader.progressTotal) * 100).toFixed(2)
-              console.log(`${name} ${progressPct}`)
-            })
-            uploader.on('error', (err) => {
-              console.log(`error on ${name}`, err)
-            })
-            uploader.on('end', () => {
-              console.log(`${name} done`)
-            })
           }
+
+          let uploader = s3client.uploadFile(s3UploadFileParams)
+
+          uploader.on('progress', () => {
+            let progressPct = ((uploader.progressAmount / uploader.progressTotal) * 100).toFixed(2)
+            console.log(`${name} ${progressPct}`)
+          })
+          uploader.on('error', (err) => {
+            console.log(`error on ${name}`, err)
+          })
+          uploader.on('end', () => {
+            console.log(`${name} done`)
+          })
         })
       }
 
