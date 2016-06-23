@@ -158,19 +158,25 @@ module.exports = (function() {
     let uploadFunc = () => {
       console.log('running 4. uploading')
       let newMP4s = _.map(fs.readdirSync(encodedMP4sDir), f => {
-        return `${encodedMP4sDir}/${f}`
+        return {
+          path: `${encodedMP4sDir}/${f}`,
+          name : file
+        }
       })
       let newStillPics = _.map(fs.readdirSync(stillPicDir), f => {
-        return `${stillPicDir}/${f}`
+        return {
+          path : `${stillPicDir}/${f}`,
+          name: file
+        }
       })
       let filesToUpload = newMP4s.concat(newStillPics)
       console.log('filesToUpload', filesToUpload)
       _.each(filesToUpload, file => {
         let s3UploadFileParams = {
-          localFile: file,
+          localFile: file.path,
           s3Params: {
             Bucket: s3Bucket,
-            Key: `s3LiveDir/${file}`
+            Key: `${s3LiveDir}/${file.name}`
           }
         }
 
@@ -178,13 +184,13 @@ module.exports = (function() {
 
         uploader.on('progress', () => {
           let progressPct = ((uploader.progressAmount / uploader.progressTotal) * 100).toFixed(2)
-          console.log(`${file} ${progressPct}`)
+          console.log(`${file.path} ${progressPct}`)
         })
         uploader.on('error', (err) => {
-          console.log(`error on ${file}`, err)
+          console.log(`error on ${file.path}`, err)
         })
         uploader.on('end', () => {
-          console.log(`${file} done`)
+          console.log(`${file.path} done`)
         })
       })
     }
