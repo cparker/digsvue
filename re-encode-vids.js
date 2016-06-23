@@ -14,6 +14,7 @@ module.exports = (function() {
   const s3Bucket = 'digsvue'
 
   let s3AVIsDir = argv.s3AVIsDir || 'new-uploaded-avis'
+  let s3LiveDir = argv.s3LiveDir || 'live'
   let localBaseDir = argv.localBaseDir || './work'
   let newAVIsDir = `${localBaseDir}/new-avis`
   let encodedMP4sDir = `${localBaseDir}/encoded-mp4s`
@@ -27,6 +28,10 @@ module.exports = (function() {
   //let s3info = JSON.parse(fs.readFileSync('.s3keys.json'))
   let s3info = JSON.parse(process.env.S3_INFO)
   console.log('s3info', s3info)
+
+  // make some dirs
+  f2.mkdirSync(encodedMP4sDir)
+  f2.mkdirSync(stillPicDir)
 
   // for talking to s3
   let s3client = s3.createClient({
@@ -104,12 +109,12 @@ module.exports = (function() {
           .then(logExecIO)
           .then(function() {
             console.log('deleting source file')
-            unlink(`${encodedMP4sDir}/${vid}`)
+            unlink(`${newAVIsDir}/${vid}`)
           })
           .catch(logExecErr)
           .then(function() {
             console.log('deleting source file');
-            unlink(`${encodedMP4sDir}/${vid}`)
+            unlink(`${newAVIsDir}/${vid}`)
           })
       };
 
@@ -143,16 +148,49 @@ module.exports = (function() {
           .catch(logExecErr);
       };
 
+      let uploadFunc = () => {
+        console.log('running 4. uploading')
+        let newMP4s = fs.readdirSync(encodedMP4sDir)
+        let newStillPics = rs.readdirSync(stillPicDir)
+        let filesToUpload = newMP4s.append(newStillPics)
+        _.each(filesToUpload, file => {
+          return () => {
+            let s3UploadFileParams = {
+              localFile: file,
+              s3Params: {
+                Bucket: s3Bucket,
+                Prefix: s3LiveDir
+              }
+            }
+
+            let uploader = s3client.uploadFile(s3UploadFileParams)
+
+            uploader.on('progress', () => {
+              let progressPct = ((uploader.progressAmount / uploader.progressTotal) * 100).toFixed(2)
+              console.log(`${name} ${progressPct}`)
+            })
+            uploader.on('error', (err) => {
+              console.log(`error on ${name}`, err)
+            })
+            uploader.on('end', () => {
+              console.log(`${name} done`)
+            })
+          }
+        })
+      }
+
       // returning an array, which gets flattened
       return [reEncodeFunc, makeGifFunc];
 
     }));
 
     // now execute the promises sequentially
-    commandPromises.reduce(Q.when, Q('initial'));
-
+    commandPromises.reduce(Q.when, Q('initial'))
+      .then(() => {
+        console.log('starting uploads')
+        uploadFunc()
+      })
   })
-
 
 
 
