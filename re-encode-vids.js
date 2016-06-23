@@ -61,9 +61,23 @@ module.exports = (function() {
   })
 
   aviDownloader.on('end', () => {
-    console.log('new AVIs downloaded from s3')
+    console.log('new AVIs downloaded from s3, deleting remote files')
 
     var vids = fs.readdirSync(newAVIsDir)
+    _.each(vids, v => {
+      let s3DeleteRemoteFiles = {
+        s3Params: {
+          Bucket: s3Bucket,
+          Prefix: `${s3AVIsDir}/${v}`
+        }
+      }
+      let deleter = s3client.deleteObjects(s3DeleteRemoteFiles)
+      deleter.on('end', () => {
+        console.log('deleted', `${s3AVIsDir}/${v}`)
+      })
+
+    })
+
     console.log('', vids.length, 'new videos to re-encode');
 
     var encodeCommand = '/app/vendor/libav/bin/avconv -y -i $INPUT -vcodec libx264 -preset slow -b:v 100k -maxrate 100k -bufsize 200k -r 4 $OUTPUT';
@@ -160,12 +174,12 @@ module.exports = (function() {
       let newMP4s = _.map(fs.readdirSync(encodedMP4sDir), f => {
         return {
           path: `${encodedMP4sDir}/${f}`,
-          name : f
+          name: f
         }
       })
       let newStillPics = _.map(fs.readdirSync(stillPicDir), f => {
         return {
-          path : `${stillPicDir}/${f}`,
+          path: `${stillPicDir}/${f}`,
           name: f
         }
       })
@@ -190,7 +204,8 @@ module.exports = (function() {
           console.log(`error on ${file.path}`, err)
         })
         uploader.on('end', () => {
-          console.log(`${file.path} done`)
+          console.log(`${file.path} done, deleting`)
+          unlink(file.path)
         })
       })
     }
