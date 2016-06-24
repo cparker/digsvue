@@ -85,7 +85,7 @@ module.exports = (function() {
   let makeUploader = (path, name, destFolder) => {
 
     // motion writes image names like 137-2016-06-20_18-34-10.mp4, where 137 is some kind of sequence number
-    let fileParseRx = new RegExp('^(\\d\\d\\d)-(\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d)_(\\d\\d)-(\\d\\d)-(\\d\\d)\.\\w\\w\\w$')
+    let fileParseRx = new RegExp('^(\\d\\d\\d)-(\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d)_(\\d\\d)-(\\d\\d)-(\\d\\d)\.(\\w\\w\\w)$')
     let matches = fileParseRx.exec(name)
     if (!matches) {
       console.log(`file ${name} is in a strange format, not uploading`)
@@ -97,6 +97,7 @@ module.exports = (function() {
     let hour = matches[5]
     let min = matches[6]
     let sec = matches[7]
+    let ext = matches[8]
 
     let realDate = moment().year(year).month(month).date(day).hour(hour).minute(min).second(sec).utcOffset(0)
 
@@ -106,10 +107,9 @@ module.exports = (function() {
       s3Params: {
         Bucket: s3Bucket,
         // use an ISO date/time as the filename
-        Key: `${destFolder}/${realDate.format()}`
+        Key: `${destFolder}/${realDate.format()}/.${ext}`
       },
     }
-    console.log('params', params)
 
     let uploader = s3client.uploadFile(params)
     uploader.on('progress', () => {
