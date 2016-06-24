@@ -17,6 +17,7 @@ const Async = require('asyncawait/async')
 const mongodb = require('mongodb')
 const gju = require('geojson-utils')
 const nodemailer = require('nodemailer')
+const s3 = require('s3')
 
 
 module.exports = (() => {
@@ -26,6 +27,18 @@ module.exports = (() => {
   const dbName = 'databaseName'
   const defaultDBConnection = `mongodb://localhost/${dbName}`
   const mongoCollectionName = 'collectionName'
+
+  let baseDir = process.env.BASE_DIR || '/app'
+
+  let s3info = JSON.parse(process.env.S3_INFO)
+  
+  let s3client = s3.createClient({
+    s3Options: {
+      accessKeyId: s3info.key,
+      secretAccessKey: s3info.secret,
+      region: 'us-east-1'
+    }
+  })
 
   let execPromise = Q.denodeify(exec)
 
@@ -131,6 +144,84 @@ module.exports = (() => {
         })
       })
   }
+
+
+  let handleZoneViewRequest = (req, res) => {
+    var sinceHours = req.query.sinceHours || 24
+    console.log('getting you files created in the last ', sinceHours, ' hours')
+    var cutoffDate = moment().subtract(sinceHours, 'hours').toDate()
+    console.log('cutoff date ', cutoffDate)
+
+    // find live files on s3 that are within time range
+
+
+    // get the file names
+    let files = fs.readdirSync(motionContentDir)
+
+    // map those into file stats
+    var fileStats = _.map(files, function (f) {
+      var fd = fs.openSync(motionContentDir + '/' + f, 'r');
+      var stat = fs.fstatSync(fd);
+      fs.closeSync(fd);
+      return {
+        url: imageURLPrefix + f,
+        name: f,
+        stat: stat
+      };
+    });
+
+
+    var newFiles = _.filter(fileStats, function (fs) {
+      return fs.stat.mtime >= cutoffDate;
+    });
+
+    // filter out only the vids
+    var vids = _.filter(newFiles, function (fs) {
+      var suffix = '.mp4';
+      return fs.name.match(suffix + '$') == suffix;
+    });
+
+    // for each vid, find its corresponding still image (.gif) and make a pair
+    var pairs = _.chain(vids)
+      .map(function (vid) {
+        var noExtention = vid.name.substr(0, vid.name.lastIndexOf('.'));
+        var picFilename = noExtention + '.gif';
+        // confirm that we have the still
+        var hasPic = _.find(newFiles, function (fs) {
+          return fs.name === picFilename;
+        });
+
+        if (hasPic) {
+          return {
+            'eventDate': moment(vid.stat.mtime),
+            'pic': imageURLPrefix + picFilename,
+            'vid': imageURLPrefix + vid.name
+          };
+        } else {
+          console.log('skipping ', vid.name, ' because we couldnt find a matching pic', picFilename);
+          return undefined;
+        }
+      })
+      .filter(function (x) {
+        return x !== undefined;
+      })
+      .sortBy(function (pair) {
+        return pair.eventDate.toDate();
+      })
+      .map(function (pair) {
+        return {
+          'eventDate': pair.eventDate.format(),
+          'pic': pair.pic,
+          'vid': pair.vid
+        };
+      })
+      .value()
+      .reverse();
+
+    console.log('returning', pairs);
+
+    res.json(pairs);
+  };
 
   app.post(serviceURL, setData)
   app.post(triggerReEncode, handleReEncode)

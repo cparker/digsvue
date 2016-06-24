@@ -81,14 +81,27 @@ module.exports = (function() {
     return f.name.endsWith('.jpg');
   });
 
-  let makeUploader = (path,name,destFolder) => {
+  let makeUploader = (path, name, destFolder) => {
+
+    // motion writes image names like 137-2016-06-20_18-34-10.mp4, where 137 is some kind of sequence number
+    let fileParseRx = new RegExp('^(\\d\\d\\d)-(\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d)_(\\d\\d)-(\\d\\d)-(\\d\\d)\.\\w\\w\\w$')
+    let matches = fileParseRx.exec(name)
+    let year = matches[2]
+    let month = matches[3]
+    let day = matches[4]
+    let hour = matches[5]
+    let min = matches[6]
+    let sec = matches[7]
+
+    let realDate = moment().year(year).month(month).date(day).hour(hour).minute(min).second(sec).zone('gmt')
 
     var params = {
       localFile: path,
 
       s3Params: {
         Bucket: s3Bucket,
-        Key: `${destFolder}/${name}`
+        // use an ISO date/time as the filename
+        Key: `${destFolder}/${realDate.format()}`
       },
     }
 
