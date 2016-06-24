@@ -131,9 +131,13 @@ module.exports = (function() {
   })
 
   // upload pics
+  // we don't really need to upload the pics anymore, because we're generating .gif (animated) for the stills,
+  // or if that fails we generate a non animated one
+  /*
   let picUploaders = _.map(pics, newPic => {
     return makeUploader(newPic.fullpath, newPic.name, newPICDestFolder)
   })
+  */
 
   console.log('finishing up');
   writeFile(lastCheckDir + '/' + lastCheckFile, JSON.stringify({
