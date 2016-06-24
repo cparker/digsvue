@@ -94,7 +94,7 @@ module.exports = (function() {
     let min = matches[6]
     let sec = matches[7]
 
-    let realDate = moment().year(year).month(month).date(day).hour(hour).minute(min).second(sec).zone('gmt')
+    let realDate = moment().year(year).month(month).date(day).hour(hour).minute(min).second(sec).utcOffset(0)
 
     var params = {
       localFile: path,
