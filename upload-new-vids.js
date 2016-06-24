@@ -107,7 +107,7 @@ module.exports = (function() {
       s3Params: {
         Bucket: s3Bucket,
         // use an ISO date/time as the filename
-        Key: `${destFolder}/${realDate.format()}/.${ext}`
+        Key: `${destFolder}/${realDate.format()}.${ext}`
       },
     }
 
