@@ -109,6 +109,7 @@ module.exports = (function() {
         Key: `${destFolder}/${realDate.format()}`
       },
     }
+    console.log('params', s3Params)
 
     let uploader = s3client.uploadFile(params)
     uploader.on('progress', () => {
