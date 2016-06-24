@@ -7,6 +7,7 @@ var Q = require('q');
 var _ = require('underscore');
 var argv = require('minimist')(process.argv.slice(2));
 let s3 = require('s3')
+const moment = require('moment')
 
 module.exports = (function() {
 
