@@ -87,6 +87,10 @@ module.exports = (function() {
     // motion writes image names like 137-2016-06-20_18-34-10.mp4, where 137 is some kind of sequence number
     let fileParseRx = new RegExp('^(\\d\\d\\d)-(\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d)_(\\d\\d)-(\\d\\d)-(\\d\\d)\.\\w\\w\\w$')
     let matches = fileParseRx.exec(name)
+    if (!matches) {
+      console.log(`file ${name} is in a strange format, not uploading`)
+      return function() {}
+    }
     let year = matches[2]
     let month = matches[3]
     let day = matches[4]
