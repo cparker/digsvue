@@ -1,10 +1,6 @@
 const express = require('express')
 const s3 = require('s3')
 
-let s3info = {
-  key: "AKIAJIXWUKH522SIHEUA",
-  secret: "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"
-}
 
 let s3client = s3.createClient({
   s3Options: {
