@@ -1,58 +1,87 @@
 html {
     height: 100%;
-    width: 100%;
-    font-family: 'Heebo', sans-serif;
-    font-size: 14pt;
+    padding: 0;
+    margin: 0;
+    font-family: sans-serif;
 }
+
 body {
     height: 100%;
+    padding: 0;
     margin: 0;
-    padding: 10px;
-    background-color: #1e1e1e;
-    color: #ffffff;
+    color:lightgray;
+    background-color:#3c1f1f;;
 }
+
+.title {
+    text-align:center;
+}
+
+.events-title {
+    text-align:center;
+}
+
+.cams {
+    width:100%;
+    display:flex;
+    flex-direction:column;
+}
+
+.cam-events {
+    width:100%;
+    display:flex;
+    flex-direction:column;
+}
+
+.image-container {
+    width:100%;
+}
+
+.vid-container {
+    width:100%;
+    position:relative;
+}
+
+.vid-container video {
+    width:95%;
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:0.2em;
+    margin-bottom:0.2em;
+}
+
+.vid-container .controls {
+    position:absolute;
+    bottom:5%;
+    left:5%;
+}
+
+.image-container img {
+    width:95%;
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:0.2em;
+    margin-bottom:0.2em;
+}
+
 a {
+    color:inherit;
+}
+
+a:link {
     text-decoration: none;
-    color: inherit;
 }
+
+a:visited {
+    text-decoration: none;
+}
+
 a:hover {
-    font-weight: bold;
-}
-.zone-title {
-    border-bottom: 1px solid lightgray;
-}
-.event-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-}
-.event {
-    padding: 2px;
-    cursor: pointer;
-}
-.event img {
-    border: 1px solid lightgray;
-    width: 25vw;
-}
-.event.current img {
-    width: 45vw;
-}
-.event-datetime, .feed-name {
-    position: relative;
-    bottom: 25px;
-    margin-bottom: -25px;
-    left: 5px;
-    color: #00ff00;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    text-decoration: none;
 }
 
-/* Styles for phones */
-
-@media only screen and (min-device-width: 320px) and (max-device-width: 667px) {
-    .event img {
-        width: 48vw;
-    }
-    .event.current img {
-        width: 48vw;
-    }
+a:active {
+    text-decoration: underline;
 }

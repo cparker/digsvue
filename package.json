@@ -1,37 +1,22 @@
 {
   "name": "digsvue",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "multi camera view of my digs",
   "main": "server.js",
   "engines": {
-    "node": "6.1"
+    "node": "8"
   },
   "dependencies": {
-    "asyncawait": "^1.0.3",
-    "bluebird": "^3.3.5",
-    "body-parser": "^1.15.0",
-    "bower": "^1.7.9",
-    "express": "^4.13.4",
-    "express-session": "^1.13.0",
-    "geojson-utils": "^1.1.0",
-    "grunt": "^1.0.1",
-    "moment": "^2.12.0",
-    "mongodb": "^2.1.18",
-    "morgan": "^1.7.0",
-    "nodemailer": "^2.4.2",
-    "q": "^1.4.1",
-    "request-promise": "^3.0.0",
-    "s3": "^4.4.0",
-    "ui-router": "^1.0.0-alpha.3",
-    "underscore": "^1.8.3"
+    "express": "^4.16.3",
+    "moment": "^2.22.1",
+    "s3": "^4.4.0"
   },
   "directories": {
     "doc": "doc"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "postinstall": "bower install"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",

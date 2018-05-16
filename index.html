@@ -1,28 +1,47 @@
-<html lang="en" ng-app="multiView">
+<!DOCTYPE html>
+<html>
 
-    <head>
-        <script src="bower_components/underscore/underscore-min.js"></script>
-        <script src="node_modules/lodash/index.js"></script>
-        <script src="bower_components/angular/angular.js"></script>
-        <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-        <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-        <script src="bower_components/videogular/videogular.js"></script>
-        <script src="bower_components/videogular-controls/vg-controls.js"></script>
-        <script src="bower_components/videogular-poster/vg-poster.js"></script>
-        <script src="bower_components/videogular-overlay-play/vg-overlay-play.js"></script>
-        <script src="bower_components/moment/moment.js"></script>
-        <script src="main.js"></script>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 
-        <link href="https://fonts.googleapis.com/css?family=Heebo:100" rel="stylesheet">
-        <link rel="stylesheet" href="main.css">
-        <link rel="stylesheet" href="bower_components/videogular-themes-default/videogular.css">
-    </head>
+    <title>digsvue</title>
 
-    <body ng-controller="AppCtrl">
-        <!--
-        <a ui-sref="home">Home</a>
-        <a ui-sref="front-door">Front Door</a> -->
-        <div ui-view></div>
-    </body>
+    <link rel="stylesheet" href="./main.css">
+
+    <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/all.js"></script>
+    <script src="./node_modules/moment/min/moment-with-locales.min.js"></script>
+    <script src="./main.js"></script>
+</head>
+
+<body>
+    <h3 class='title'>Digsvue</h3>
+
+    <!-- CAMS PAGE -->
+    <div class='cams' style='display:none;'>
+        <div class='image-container'><img src='living-room-2018-05-16_07-50-22.jpg' /></div>
+        <div class='image-container'><img src='living-room-2018-05-16_07-50-22.jpg' /></div>
+        <div class='image-container'><img src='living-room-2018-05-16_07-50-22.jpg' /></div>
+    </div>
+
+    <!-- EVENTS PER CAM PAGE -->
+    <div class='cam-events'>
+        <h4 class='events-title'>Events for living room</h4>
+        <div class='vid-container'>
+            <video loop poster='living-room-2018-05-16_07-50-22.jpg' preload='none' src='living-room-2018-05-15_22-01-01.mp4 '></video>
+            <div class='controls'>
+                <a href='living-room-2018-05-15_22-01-01.mp4' target='blank'><span class='fullscreen'><i class="fas fa-expand fa-2x"></i> </span></a>
+            </div>
+        </div>
+        <div class='vid-container'>
+            <video loop poster='living-room-2018-05-16_07-50-22.jpg' preload='none' src='living-room-2018-05-15_22-01-01.mp4 '></video>
+            <div class='controls'>
+                <span class='fullscreen'><i class="fas fa-expand fa-2x"></i></span>
+            </div>
+        </div>
+    </div>
+
+</body>
 
 </html>

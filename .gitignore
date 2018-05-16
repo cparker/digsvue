@@ -6,3 +6,5 @@ bower_components
 .DS_Store
 .pioenvs
 .s3keys.json
+.digsvue-creds.csv
+test/
