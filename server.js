@@ -7,6 +7,8 @@ const s3 = require('s3')
 const AWS = require('aws-sdk')
 const moment = require('moment')
 const _ = require('lodash')
+const sendSeekable = require('send-seekable')
+const fs = require('fs')
 
 const aws3 = new AWS.S3()
 
@@ -30,18 +32,20 @@ let s3client = s3.createClient({
 })
 
 
+app.use(sendSeekable)
 app.use(express.static('.'))
 
 /*
   fetch stuff from s3 bucket
+  s3?resource=2018-05-18/foo.jpg
 */
-app.get('/s3/:resource', (req, res) => {
+app.get('/s3', (req, res) => {
     let contentType
-    if (req.params.resource.endsWith('.jpg')) {
+    if (req.query.resource.endsWith('.jpg')) {
         contentType = 'image/jpg'
-    } else if (req.params.resource.endsWith('.mp4')) {
+    } else if (req.query.resource.endsWith('.mp4')) {
         contentType = 'video/mp4'
-    } else if (req.params.resource.endsWith('.png')) {
+    } else if (req.query.resource.endsWith('.png')) {
         contentType = 'image/png'
     } else {
         contentType = 'application/text'
@@ -49,13 +53,13 @@ app.get('/s3/:resource', (req, res) => {
 
     const params = {
         Bucket: "digsvue2",
-        Key: `camera-uploads/${req.params.resource}`
+        Key: `camera-uploads/${req.query.resource}`
     }
     const downloader = s3client.downloadBuffer(params)
 
     downloader.on('end', b => {
         res.set('Content-Type', contentType)
-        res.status(200).send(b)
+        res.sendSeekable(b)
     })
 
     downloader.on('error', e => {
@@ -85,7 +89,7 @@ function gets3Files(bucket, key) {
   get events for the current day and N previous days
   ?previousDays=n
 */
-app.get('/getEvents', async(req, res) => {
+app.get('/getEvents/:camName', async(req, res) => {
     const prevDays = parseInt(req.query.previousDays || 2)
     const dayList = []
     for (let days = 0; days < prevDays; days++) {
@@ -93,6 +97,7 @@ app.get('/getEvents', async(req, res) => {
     }
 
     const filesByDayProms = dayList.map(d => {
+        // return gets3Files('digsvue2', `camera-uploads/${req.params.camName}/${d}/`)
         return gets3Files('digsvue2', `camera-uploads/${d}/`)
     })
 
@@ -101,7 +106,22 @@ app.get('/getEvents', async(req, res) => {
 
     const flatFiles = _.flatten(filesByDay)
 
-    res.status(200).send(flatFiles)
+    res.status(200).json(flatFiles)
+})
+
+app.get('/testvids.html', (req, res) => {
+    const vidFiles = fs.readdirSync('./testvids').filter(v => v.endsWith('.mp4'))
+    const vidLinks = vidFiles.map(v => `<a href='/testvids/${v}'>${v}</a>`).join('<br/>\n')
+    const vidPage = `
+    <html>
+      <body>
+        ${vidLinks}
+      </body>
+    </html>
+    `
+    console.log('vidpage is', vidPage)
+    res.set('Content-Type', 'text/html')
+    res.send(vidPage)
 })
 
 app.listen(port, () => {

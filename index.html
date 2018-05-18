@@ -12,34 +12,25 @@
 
     <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/all.js"></script>
     <script src="./node_modules/moment/min/moment-with-locales.min.js"></script>
+    <script src="./node_modules/lodash/lodash.min.js"></script>
     <script src="./main.js"></script>
 </head>
 
 <body>
-    <h3 class='title'>Digsvue</h3>
 
     <!-- CAMS PAGE -->
-    <div class='cams' style='display:none;'>
-        <div class='image-container'><img src='living-room-2018-05-16_07-50-22.jpg' /></div>
-        <div class='image-container'><img src='living-room-2018-05-16_07-50-22.jpg' /></div>
-        <div class='image-container'><img src='living-room-2018-05-16_07-50-22.jpg' /></div>
+    <div class='cams' style='display:inherit;'>
+        <div class='title-box'>
+            <div class='refresh'><i class='fa fa-sync-alt fa-2x'></i></div>
+
+            <h3 class='title'>Digsvue</h3>
+        </div>
     </div>
 
     <!-- EVENTS PER CAM PAGE -->
-    <div class='cam-events'>
-        <h4 class='events-title'>Events for living room</h4>
-        <div class='vid-container'>
-            <video loop poster='living-room-2018-05-16_07-50-22.jpg' preload='none' src='living-room-2018-05-15_22-01-01.mp4 '></video>
-            <div class='controls'>
-                <a href='living-room-2018-05-15_22-01-01.mp4' target='blank'><span class='fullscreen'><i class="fas fa-expand fa-2x"></i> </span></a>
-            </div>
-        </div>
-        <div class='vid-container'>
-            <video loop poster='living-room-2018-05-16_07-50-22.jpg' preload='none' src='living-room-2018-05-15_22-01-01.mp4 '></video>
-            <div class='controls'>
-                <span class='fullscreen'><i class="fas fa-expand fa-2x"></i></span>
-            </div>
-        </div>
+    <div class='cam-events' style='display:none'>
+        <div class='back'><i class='fa fa-arrow-alt-circle-left fa-2x'></i></div>
+        <h4 class='events-title'>Events for <span id='eventTitle'></span></h4>
     </div>
 
 </body>
