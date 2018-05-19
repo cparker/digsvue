@@ -9,6 +9,8 @@ const moment = require('moment')
 const _ = require('lodash')
 const sendSeekable = require('send-seekable')
 const fs = require('fs')
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 
 const aws3 = new AWS.S3()
 
@@ -16,6 +18,19 @@ const aws3 = new AWS.S3()
 let s3info = {
     key: process.env.AWS_ACCESS_KEY_ID,
     secret: process.env.AWS_SECRET_ACCESS_KEY
+}
+
+const password = process.env.PASS
+const cookieKey = process.env.COOKIE_KEY
+
+if (!password) {
+    console.log('must set env var PASS')
+    process.exit(1)
+}
+
+if (!cookieKey) {
+    console.log('must set env var COOKIE_KEY')
+    process.exit(1)
 }
 
 if (!s3info.key) {
@@ -32,8 +47,49 @@ let s3client = s3.createClient({
 })
 
 
+app.use(cookieParser())
+
 app.use(sendSeekable)
 app.use(express.static('.'))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+    extended: true
+}))
+
+app.post('/login', (req, res) => {
+    console.log('login', req.body)
+    if (req.body.pass === password) {
+        res.cookie(cookieKey, '1', {
+            expires: new Date(Date.now() + 1000 * 60  * 60 * 24 * 30),
+            httpOnly:true
+        })
+        res.sendStatus(200)
+    } else {
+        res.sendStatus(401)
+    }
+})
+
+// check cookie
+app.use((req, res, next) => {
+    console.log('incoming ', req.url)
+    console.log('cookies',req.cookies)
+    console.log('cookieKey', )
+    if (req.cookies[cookieKey]) {
+        console.log('PASS')
+        next()
+    } else {
+        console.log('NOTPASS')
+        res.status(401).send('you shall not pass')
+    }
+})
+
+// this is just a reflector basically.  the app.use above does the real checking
+app.get('/checkauth', (req, res) => {
+    res.sendStatus(200)
+})
+
+
+
 
 /*
   fetch stuff from s3 bucket

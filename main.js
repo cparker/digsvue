@@ -14,25 +14,51 @@ function getPage() {
     const p = {}
     p.cams = document.querySelector('body .cams')
     p.camEvents = document.querySelector('body .cam-events')
+    p.authPage = document.querySelector('body .auth')
     p.eventTitle = document.querySelector('#eventTitle')
     p.back = document.querySelector('.back')
     p.refresh = document.querySelector('.refresh')
+    p.pass = document.querySelector('.auth .pass input')
+    p.login = document.querySelector('.auth .submit button')
 
     p.back.addEventListener('click', backToCams)
     p.refresh.addEventListener('click', backToCams)
+    p.login.addEventListener('click', doLogin)
 
     return p
 }
 
+function doLogin() {
+    console.log('LOGIN', page.pass.value)
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ pass: page.pass.value }),
+        credentials: 'include'
+    }).then(response => {
+        console.log('login response', response)
+        if (response.ok) {
+            hideAllPages()
+            updateCamsPage()
+            showCamsPage()
+        }
+    })
+
+}
+
 function backToCams() {
-    page.cams.style.display='inherit'
-    page.camEvents.style.display='none'
+    page.cams.style.display = 'inherit'
+    page.camEvents.style.display = 'none'
     updateCamsPage()
 }
 
 function handleSelectEvent(item) {
     console.log('event handler', item.srcElement)
-    if (item.srcElement.paused) {1
+    if (item.srcElement.paused) {
+        1
         item.srcElement.play()
     } else {
         item.srcElement.pause()
@@ -87,7 +113,9 @@ function handleCamClick(cam) {
         StorageClass : "STANDARD"
     */
 
-    const events = fetch(`/getEvents/${cam}`)
+    const events = fetch(`/getEvents/${cam}`, {
+        credentials: 'include'
+    })
         .then(response => {
             return response.json()
         })
@@ -121,6 +149,36 @@ function clearEvents() {
     document.querySelectorAll('.cam-events .vid-container').forEach(e => e.remove())
 }
 
+function hideAllPages() {
+    page.authPage.style.display = 'none'
+    page.cams.style.display = 'none'
+    page.camEvents.style.display = 'none'
+}
+
+function showLoginPage() {
+    page.authPage.style.display = 'inherit'
+}
+
+function showCamsPage() {
+    page.cams.style.display = 'inherit'
+}
+
+function checkAuth() {
+    fetch('/checkauth', {
+        credentials: 'include'
+    })
+        .then(response => {
+            if (!response.ok) {
+                hideAllPages()
+                showLoginPage()
+            } else {
+                hideAllPages()
+                updateCamsPage()
+                showCamsPage()
+            }
+        })
+}
+
 function updateCamsPage() {
     const todayYMD = moment().format('YYYY-MM-DD')
     const snapURLs = camNames.map(c => {
@@ -142,5 +200,5 @@ function updateCamsPage() {
 
 window.onload = () => {
     init()
-    updateCamsPage()
+    checkAuth()
 }

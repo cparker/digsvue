@@ -82,6 +82,27 @@ body {
     left:0.6em;
 }
 
+.auth .pass  {
+    width:85%;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.auth .pass input {
+    width:100%;
+    font-size:2.0em;
+}
+.auth .submit {
+    width:85%;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.auth .submit button {
+    color:white;
+    font-size:2.0em;
+}
+
 
 a {
     color:inherit;
