@@ -46,9 +46,7 @@ let s3client = s3.createClient({
     }
 })
 
-
 app.use(cookieParser())
-
 app.use(sendSeekable)
 app.use(express.static('.'))
 app.use(bodyParser.json())
@@ -57,6 +55,7 @@ app.use(bodyParser.urlencoded({
 }))
 
 app.post('/login', (req, res) => {
+    console.log('/login')
     console.log('login', req.body)
     if (req.body.pass === password) {
         res.cookie(cookieKey, '1', {
@@ -71,24 +70,20 @@ app.post('/login', (req, res) => {
 
 // check cookie
 app.use((req, res, next) => {
-    console.log('incoming ', req.url)
-    console.log('cookies',req.cookies)
-    console.log('cookieKey', )
     if (req.cookies[cookieKey]) {
-        console.log('PASS')
+        console.log('pass')
         next()
     } else {
-        console.log('NOTPASS')
+        console.log('notpass')
         res.status(401).send('you shall not pass')
     }
 })
 
 // this is just a reflector basically.  the app.use above does the real checking
 app.get('/checkauth', (req, res) => {
+    console.log('/checkauth')
     res.sendStatus(200)
 })
-
-
 
 
 /*
@@ -96,6 +91,7 @@ app.get('/checkauth', (req, res) => {
   s3?resource=2018-05-18/foo.jpg
 */
 app.get('/s3', (req, res) => {
+    console.log('/s3', req.query)
     let contentType
     if (req.query.resource.endsWith('.jpg')) {
         contentType = 'image/jpg'
@@ -129,12 +125,11 @@ function gets3Files(bucket, key) {
             Bucket: `${bucket}`,
             Prefix: `${key}`
         }
-        console.log('params', params)
+        console.log('looking in s3 for', params)
         aws3.listObjectsV2(params, (err, data) => {
             if (err) {
                 reject(err)
             } else {
-                console.log('got data', data)
                 resolve(data)
             }
         })
@@ -146,6 +141,7 @@ function gets3Files(bucket, key) {
   ?previousDays=n
 */
 app.get('/getEvents/:camName', async(req, res) => {
+    console.log('/getEvents', req.params, req.query)
     const prevDays = parseInt(req.query.previousDays || 2)
     const dayList = []
     for (let days = 0; days < prevDays; days++) {
@@ -161,8 +157,9 @@ app.get('/getEvents/:camName', async(req, res) => {
         .map(result => result.Contents)
 
     const flatFiles = _.flatten(filesByDay)
+    const byCamera = flatFiles.filter(rec => rec.Key.indexOf(req.params.camName) != -1)
 
-    res.status(200).json(flatFiles)
+    res.status(200).json(byCamera)
 })
 
 app.get('/testvids.html', (req, res) => {
