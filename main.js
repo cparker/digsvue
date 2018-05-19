@@ -2,7 +2,8 @@
 let page = {}
 
 let camNames = [
-    'living-room'
+    'living-room',
+    'garage'
 ]
 
 function init() {
