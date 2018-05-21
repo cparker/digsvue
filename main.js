@@ -126,6 +126,9 @@ function handleCamClick(cam) {
             const stills = eventJson.filter(e => e.Key.endsWith('jpg') && e.Key.indexOf('snapshot') === -1)
             const movies = eventJson.filter(e => e.Key.endsWith('mp4'))
 
+            // reverse sort by Key, which should put newest events at the top
+            stills.sort( (l,r) => r.Key.localeCompare(l.Key))
+
             stills.forEach(still => {
                 // we're comparing only the event number of the jpg to the mp4
                 const matchFunc = m => m.Key.split('_')[2].split('.')[0] === still.Key.split('_')[2].split('.')[0]
