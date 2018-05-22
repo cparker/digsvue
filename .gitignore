@@ -8,3 +8,4 @@ bower_components
 .s3keys.json
 .digsvue-creds.csv
 testvids/
+.readme-env

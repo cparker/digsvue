@@ -6,6 +6,8 @@ let camNames = [
     'garage'
 ]
 
+let activeCam = undefined
+
 function init() {
     console.log('init')
     page = getPage()
@@ -21,10 +23,15 @@ function getPage() {
     p.refresh = document.querySelector('.refresh')
     p.pass = document.querySelector('.auth .pass input')
     p.login = document.querySelector('.auth .submit button')
+    p.daysMinus = document.querySelector('.cam-events .day-controls .left')
+    p.daysPlus = document.querySelector('.cam-events .day-controls .right')
+    p.value = document.querySelector('.cam-events .day-controls .value')
 
     p.back.addEventListener('click', backToCams)
     p.refresh.addEventListener('click', backToCams)
     p.login.addEventListener('click', doLogin)
+    p.daysMinus.addEventListener('click', () => handleDays(-1))
+    p.daysPlus.addEventListener('click', () => handleDays(1))
 
     return p
 }
@@ -48,6 +55,12 @@ function doLogin() {
         }
     })
 
+}
+
+function handleDays(incOrDec) {
+    let newVal = parseInt(page.value.innerHTML) + incOrDec
+    page.value.innerHTML = `${newVal}`
+    handleCamClick(activeCam, newVal)
 }
 
 function backToCams() {
@@ -98,8 +111,11 @@ function addEvent(still, vid) {
     page.camEvents.appendChild(vidDiv)
 }
 
-function handleCamClick(cam) {
-    console.log('clicked on', cam)
+function handleCamClick(cam, prevDays) {
+    let fetchForCam = cam || activeCam
+    activeCam = fetchForCam
+    console.log('clicked on', cam, 'prev days', prevDays)
+    const _prevDays = prevDays || 2
     page.cams.style.display = 'none'
     page.camEvents.style.display = 'inherit'
     page.eventTitle.innerHTML = cam
@@ -114,7 +130,7 @@ function handleCamClick(cam) {
         StorageClass : "STANDARD"
     */
 
-    const events = fetch(`/getEvents/${cam}`, {
+    const events = fetch(`/getEvents/${cam}?previousDays=${_prevDays}`, {
         credentials: 'include'
     })
         .then(response => {

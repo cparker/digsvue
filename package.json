@@ -12,6 +12,7 @@
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
     "lodash": "^4.17.10",
+    "mime-types": "^2.1.18",
     "moment": "^2.22.1",
     "s3": "^4.4.0",
     "send-seekable": "^1.0.4"
@@ -32,5 +33,8 @@
   "bugs": {
     "url": "https://github.com/cparker/digsvue/issues"
   },
-  "homepage": "https://github.com/cparker/digsvue#readme"
+  "homepage": "https://github.com/cparker/digsvue#readme",
+  "devDependencies": {
+    "eslint": "^4.19.1"
+  }
 }

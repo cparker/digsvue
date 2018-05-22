@@ -57,9 +57,28 @@ body {
     margin-right:auto;
 }
 
-.back {
-    padding-top:0.6em;
-    padding-left:0.6em;
+.cam-events .title {
+    /* padding-top:0.6em;
+    padding-left:0.6em; */
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    margin:0.5em;
+}
+
+.cam-events .title h4 {
+    margin-top:0.5em;
+}
+
+.cam-events .day-controls .value {
+    font-size:1.5em;
+    transform: translateY(-3px);
+    display:inline-block;
+}
+
+.cam-events .day-controls span {
+    padding-left:0.4em;
+    padding-right:0.4em;
 }
 
 .image-container img {

@@ -11,6 +11,7 @@ const sendSeekable = require('send-seekable')
 const fs = require('fs')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const mimeTypes = require('mime-types')
 
 const aws3 = new AWS.S3()
 
@@ -34,7 +35,7 @@ if (!cookieKey) {
 }
 
 if (!s3info.key) {
-    console.log('please set AWS_S3_DIGS_KEY and AWS_S3_DIGS_SECRET')
+    console.log('please make sure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set')
     process.exit(1)
 }
 
@@ -92,16 +93,7 @@ app.get('/checkauth', (req, res) => {
 */
 app.get('/s3', (req, res) => {
     console.log('/s3', req.query)
-    let contentType
-    if (req.query.resource.endsWith('.jpg')) {
-        contentType = 'image/jpg'
-    } else if (req.query.resource.endsWith('.mp4')) {
-        contentType = 'video/mp4'
-    } else if (req.query.resource.endsWith('.png')) {
-        contentType = 'image/png'
-    } else {
-        contentType = 'application/text'
-    }
+    const contentType = mimeTypes.lookup(req.query.resource) || 'application/octet-stream'
 
     const params = {
         Bucket: "digsvue2",
@@ -118,6 +110,7 @@ app.get('/s3', (req, res) => {
         res.status(500).send(e)
     })
 })
+
 
 function gets3Files(bucket, key) {
     return new Promise((resolve, reject) => {
