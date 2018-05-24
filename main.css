@@ -9,122 +9,151 @@ body {
     height: 100%;
     padding: 0;
     margin: 0;
-    color:lightgray;
-    background-color:#3c1f1f;;
+    color: lightgray;
+    background-color: #3c1f1f;
 }
 
 .title {
-    text-align:center;
+    text-align: center;
 }
 
 .events-title {
-    text-align:center;
+    text-align: center;
 }
 
 .cams {
-    width:100%;
-    display:flex;
-    flex-direction:column;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .cam-events {
-    width:100%;
-    display:flex;
-    flex-direction:column;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .image-container {
-    width:100%;
+    width: 100%;
 }
 
 .vid-container {
-    width:100%;
-    position:relative;
+    width: 100%;
+    position: relative;
 }
 
 .vid-container video {
-    width:95%;
-    display:block;
-    margin-left:auto;
-    margin-right:auto;
-    margin-top:0.2em;
-    margin-bottom:0.2em;
+    width: 95%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
 }
 
 .vid-container .vid-title {
-    width:95%;
-    margin-left:auto;
-    margin-right:auto;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .cam-events .title {
     /* padding-top:0.6em;
     padding-left:0.6em; */
-    display:flex;
-    flex-direction:row;
-    justify-content:space-between;
-    margin:0.5em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0.5em;
 }
 
 .cam-events .title h4 {
-    margin-top:0.5em;
+    margin-top: 0.5em;
 }
 
-.cam-events .day-controls .value {
-    font-size:1.5em;
-    transform: translateY(-3px);
-    display:inline-block;
-}
-
-.cam-events .day-controls span {
-    padding-left:0.4em;
-    padding-right:0.4em;
+.settings-page {
+    color: black;
 }
 
 .image-container img {
-    width:95%;
-    display:block;
-    margin-left:auto;
-    margin-right:auto;
-    margin-top:0.2em;
-    margin-bottom:0.2em;
+    width: 95%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
 }
 
 .title-box {
-    position:relative;
-    top:0;
-    left:0;
+    position: relative;
+    top: 0;
+    left: 0;
 }
 
 .refresh {
-    position:absolute;
-    left:0.6em;
+    position: absolute;
+    left: 0.6em;
 }
 
-.auth .pass  {
-    width:85%;
-    margin-left:auto;
-    margin-right:auto;
+.auth .pass {
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .auth .pass input {
-    width:100%;
-    font-size:2.0em;
+    width: 100%;
+    font-size: 2.0em;
 }
+
 .auth .submit {
-    width:85%;
-    margin-left:auto;
-    margin-right:auto;
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .auth .submit button {
-    color:white;
-    font-size:2.0em;
+    color: white;
+    font-size: 2.0em;
 }
 
+.settings-page {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #b9abad;
+    transform: translateX(100%);
+    transition: transform 0.4s;
+    transition-timing-function: ease-in-out;
+    font-size: 1.2em;
+}
+
+.settings-page div {
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+}
+
+.settings-page .title {
+    text-align: center;
+    border-bottom: 1px solid dimgray;
+    padding: 0.1em;
+    margin: 0.3em;
+}
+
+.button-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.settings-page .close-settings {
+    padding: 0.5em;
+}
 
 a {
-    color:inherit;
+    color: inherit;
 }
 
 a:link {

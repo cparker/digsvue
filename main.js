@@ -25,15 +25,29 @@ function getPage() {
     p.login = document.querySelector('.auth .submit button')
     p.daysMinus = document.querySelector('.cam-events .day-controls .left')
     p.daysPlus = document.querySelector('.cam-events .day-controls .right')
-    p.value = document.querySelector('.cam-events .day-controls .value')
+    p.settings = document.querySelector('.settings')
+    p.settingsPage = document.querySelector('.settings-page')
+    p.closeSettings = document.querySelector('.close-settings')
+    // p.value = document.querySelector('.cam-events .day-controls .value')
 
     p.back.addEventListener('click', backToCams)
     p.refresh.addEventListener('click', backToCams)
     p.login.addEventListener('click', doLogin)
-    p.daysMinus.addEventListener('click', () => handleDays(-1))
-    p.daysPlus.addEventListener('click', () => handleDays(1))
+    p.settings.addEventListener('click', openSettings)
+    p.closeSettings.addEventListener('click', closeSettings)
+    // p.daysMinus.addEventListener('click', () => handleDays(-1))
+    // p.daysPlus.addEventListener('click', () => handleDays(1))
 
     return p
+}
+
+function closeSettings() {
+    page.settingsPage.style.transform = `translateX(100%)`
+}
+
+function openSettings() {
+    console.log('opening settings')
+    page.settingsPage.style.transform = `translateX(0)`
 }
 
 function doLogin() {
