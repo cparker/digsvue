@@ -1,6 +1,8 @@
 'use strict'
 
 const express = require('express')
+const NodeRestClient = require('node-rest-client').Client
+const restClient = new NodeRestClient()
 const app = express()
 const port = process.env.PORT || 5000
 const s3 = require('s3')
@@ -15,6 +17,8 @@ const mimeTypes = require('mime-types')
 
 const aws3 = new AWS.S3()
 
+const digsvueStateURL = `https://8cyz33x5i2.execute-api.us-east-1.amazonaws.com/api-stage-production/hello-lambda-3`
+const AWS_LAMBDA_KEY = process.env.AWS_LAMBDA_KEY || (() => { console.log('please set AWS_LAMBDA_KEY'); process.exit(1) })()
 
 let s3info = {
     key: process.env.AWS_ACCESS_KEY_ID,
@@ -60,8 +64,8 @@ app.post('/login', (req, res) => {
     console.log('login', req.body)
     if (req.body.pass === password) {
         res.cookie(cookieKey, '1', {
-            expires: new Date(Date.now() + 1000 * 60  * 60 * 24 * 30),
-            httpOnly:true
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+            httpOnly: true
         })
         res.sendStatus(200)
     } else {
@@ -133,7 +137,7 @@ function gets3Files(bucket, key) {
   get events for the current day and N previous days
   ?previousDays=n
 */
-app.get('/getEvents/:camName', async(req, res) => {
+app.get('/getEvents/:camName', async (req, res) => {
     console.log('/getEvents', req.params, req.query)
     const prevDays = parseInt(req.query.previousDays || 2)
     const dayList = []
@@ -169,6 +173,42 @@ app.get('/testvids.html', (req, res) => {
     res.set('Content-Type', 'text/html')
     res.send(vidPage)
 })
+
+app.post('/tracking', (req, res) => {
+    console.log('tracking, got body', req.body)
+    // call lambda function using API KEY
+    sendDigsvueState(req.body, req.query)
+        .then(data => {
+            res.status(200).json(data)
+        })
+        .catch(err => {
+            console.log('error', err)
+        })
+})
+
+function sendDigsvueState(state, params) {
+    return new Promise((resolve, reject) => {
+        const args = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accepts': 'application/json',
+                'x-api-key': `${AWS_LAMBDA_KEY}`
+            },
+            parameters: params,
+            data: state
+        }
+
+        restClient.post(digsvueStateURL, args, (data, response) => {
+            if (response.statusCode === 200) {
+                resolve(data)
+            } else {
+                console.log(`error posting to ${digsvueStateURL}`, response)
+                reject(data)
+            }
+        })
+
+    })
+}
 
 app.listen(port, () => {
     console.log(`listening on ${port}`)

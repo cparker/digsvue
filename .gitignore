@@ -9,3 +9,5 @@ bower_components
 .digsvue-creds.csv
 testvids/
 .readme-env
+package-lock.json
+*.zip

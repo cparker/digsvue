@@ -65,22 +65,26 @@ function getPage () {
 
 function trackOn () {
     console.log('tracking ON')
+    postTrackingSimple(activeCam, true)
 }
 
 function trackOff () {
     console.log('tracking OFF')
+    postTrackingSimple(activeCam, false)
 }
 
 function trackScheduleOn (value) {
     console.log('track schedule on', value)
     const newVal = parseInt(page.trackOnValue.innerHTML) + value
     page.trackOnValue.innerHTML = `${newVal}`
+    postTrackingSchedule(activeCam, parseInt(page.trackOnValue.innerHTML), parseInt(page.trackOffValue.innerHTML))
 }
 
 function trackScheduleOff (value) {
     console.log('track schedule off', value)
     const newVal = parseInt(page.trackOffValue.innerHTML) + value
     page.trackOffValue.innerHTML = `${newVal}`
+    postTrackingSchedule(activeCam, parseInt(page.trackOnValue.innerHTML), parseInt(page.trackOffValue.innerHTML))
 }
 
 function closeSettings () {
@@ -89,7 +93,40 @@ function closeSettings () {
 
 function openSettings () {
     console.log('opening settings')
+    page.settingsCam.innerHTML = `${activeCam}`
     page.settingsPage.style.width = `100vw`
+}
+
+function postTrackingSchedule (camera, on, off) {
+    const onConfig = { on: on }
+    const offConfig = { off: off }
+    /*
+      We want to order the array by the hour, for example:
+      [ {"off" : 6}, {"on" : 23} ]
+
+      says: 'turn off tracking at 6am and turn on tracking at 11pm'
+    */
+    const trackingScheduleConfig = [onConfig, offConfig].sort((l, r) => (l.off || l.on) >= (r.off || r.on))
+    postTracking(camera, trackingScheduleConfig)
+}
+
+function postTrackingSimple (camera, trackingOn) {
+    const trackingConfig = trackingOn ? [{ 'on': 0 }] : [{ 'off': 0 }]
+    postTracking(camera, trackingConfig)
+}
+
+function postTracking (camera, trackingConfig) {
+    const body = {}
+    body[camera] = trackingConfig
+    fetch(`/tracking?id=${encodeURIComponent(camera)}`, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(body)
+    })
 }
 
 function doLogin () {
