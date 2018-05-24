@@ -1,4 +1,3 @@
-
 let page = {}
 
 let camNames = [
@@ -6,51 +5,94 @@ let camNames = [
     'garage'
 ]
 
-let activeCam = undefined
+let activeCam
 
-function init() {
+function init () {
     console.log('init')
     page = getPage()
 }
 
-function getPage() {
+function getPage () {
     const p = {}
-    p.cams = document.querySelector('body .cams')
-    p.camEvents = document.querySelector('body .cam-events')
-    p.authPage = document.querySelector('body .auth')
-    p.eventTitle = document.querySelector('#eventTitle')
-    p.back = document.querySelector('.back')
-    p.refresh = document.querySelector('.refresh')
-    p.pass = document.querySelector('.auth .pass input')
-    p.login = document.querySelector('.auth .submit button')
-    p.daysMinus = document.querySelector('.cam-events .day-controls .left')
-    p.daysPlus = document.querySelector('.cam-events .day-controls .right')
-    p.settings = document.querySelector('.settings')
-    p.settingsPage = document.querySelector('.settings-page')
-    p.closeSettings = document.querySelector('.close-settings')
-    // p.value = document.querySelector('.cam-events .day-controls .value')
+
+    const qs = selector => document.querySelector(selector)
+
+    p.cams = qs('body .cams')
+    p.camEvents = qs('body .cam-events')
+    p.authPage = qs('body .auth')
+    p.eventTitle = qs('#eventTitle')
+    p.back = qs('.back')
+    p.refresh = qs('.refresh')
+    p.pass = qs('.auth .pass input')
+    p.login = qs('.auth .submit button')
+    p.daysMinus = qs('.left.prevdays')
+    p.daysPlus = qs('.right.prevdays')
+    p.settings = qs('.settings')
+    p.prevValue = qs('.value.prevdays')
+    p.settingsPage = qs('.settings-page')
+    p.closeSettings = qs('.close-settings')
+    p.trackOn = qs('#track-on')
+    p.trackOff = qs('#track-off')
+    p.trackSchedule = qs('#track-schedule')
+    p.trackOnPlus = qs('.trackon.plus')
+    p.trackOnValue = qs('.trackon.value')
+    p.trackOnMinus = qs('.trackon.minus')
+    p.trackOffPlus = qs('.trackoff.plus')
+    p.trackOffValue = qs('.trackoff.value')
+    p.trackOffMinus = qs('.trackoff.minus')
+    p.settingsCam = qs('.settings-cam')
 
     p.back.addEventListener('click', backToCams)
     p.refresh.addEventListener('click', backToCams)
     p.login.addEventListener('click', doLogin)
     p.settings.addEventListener('click', openSettings)
     p.closeSettings.addEventListener('click', closeSettings)
-    // p.daysMinus.addEventListener('click', () => handleDays(-1))
-    // p.daysPlus.addEventListener('click', () => handleDays(1))
+
+    p.daysMinus.addEventListener('click', () => handleDays(-1))
+    p.daysPlus.addEventListener('click', () => handleDays(1))
+
+    p.trackOn.addEventListener('click', () => trackOn())
+    p.trackOff.addEventListener('click', () => trackOff())
+    p.trackSchedule.addEventListener('click', () => trackScheduleOn(0))
+
+    p.trackOnPlus.addEventListener('click', () => trackScheduleOn(1))
+    p.trackOnMinus.addEventListener('click', () => trackScheduleOn(-1))
+    p.trackOffPlus.addEventListener('click', () => trackScheduleOff(1))
+    p.trackOffMinus.addEventListener('click', () => trackScheduleOff(-1))
 
     return p
 }
 
-function closeSettings() {
-    page.settingsPage.style.transform = `translateX(100%)`
+function trackOn () {
+    console.log('tracking ON')
 }
 
-function openSettings() {
+function trackOff () {
+    console.log('tracking OFF')
+}
+
+function trackScheduleOn (value) {
+    console.log('track schedule on', value)
+    const newVal = parseInt(page.trackOnValue.innerHTML) + value
+    page.trackOnValue.innerHTML = `${newVal}`
+}
+
+function trackScheduleOff (value) {
+    console.log('track schedule off', value)
+    const newVal = parseInt(page.trackOffValue.innerHTML) + value
+    page.trackOffValue.innerHTML = `${newVal}`
+}
+
+function closeSettings () {
+    page.settingsPage.style.width = `0`
+}
+
+function openSettings () {
     console.log('opening settings')
-    page.settingsPage.style.transform = `translateX(0)`
+    page.settingsPage.style.width = `100vw`
 }
 
-function doLogin() {
+function doLogin () {
     console.log('LOGIN', page.pass.value)
     fetch('/login', {
         method: 'POST',
@@ -68,32 +110,21 @@ function doLogin() {
             showCamsPage()
         }
     })
-
 }
 
-function handleDays(incOrDec) {
-    let newVal = parseInt(page.value.innerHTML) + incOrDec
-    page.value.innerHTML = `${newVal}`
+function handleDays (incOrDec) {
+    let newVal = parseInt(page.prevValue.innerHTML) + incOrDec
+    page.prevValue.innerHTML = `${newVal}`
     handleCamClick(activeCam, newVal)
 }
 
-function backToCams() {
+function backToCams () {
     page.cams.style.display = 'inherit'
     page.camEvents.style.display = 'none'
     updateCamsPage()
 }
 
-function handleSelectEvent(item) {
-    console.log('event handler', item.srcElement)
-    if (item.srcElement.paused) {
-        1
-        item.srcElement.play()
-    } else {
-        item.srcElement.pause()
-    }
-}
-
-function addEvent(still, vid) {
+function addEvent (still, vid) {
     const vidDiv = document.createElement('div')
     vidDiv.classList.add('vid-container')
     vidDiv.innerHTML = `
@@ -125,7 +156,7 @@ function addEvent(still, vid) {
     page.camEvents.appendChild(vidDiv)
 }
 
-function handleCamClick(cam, prevDays) {
+function handleCamClick (cam, prevDays) {
     let fetchForCam = cam || activeCam
     activeCam = fetchForCam
     console.log('clicked on', cam, 'prev days', prevDays)
@@ -144,7 +175,7 @@ function handleCamClick(cam, prevDays) {
         StorageClass : "STANDARD"
     */
 
-    const events = fetch(`/getEvents/${cam}?previousDays=${_prevDays}`, {
+    fetch(`/getEvents/${cam}?previousDays=${_prevDays}`, {
         credentials: 'include'
     })
         .then(response => {
@@ -157,7 +188,7 @@ function handleCamClick(cam, prevDays) {
             const movies = eventJson.filter(e => e.Key.endsWith('mp4'))
 
             // reverse sort by Key, which should put newest events at the top
-            stills.sort( (l,r) => r.Key.localeCompare(l.Key))
+            stills.sort((l, r) => r.Key.localeCompare(l.Key))
 
             stills.forEach(still => {
                 // we're comparing only the event number of the jpg to the mp4
@@ -171,33 +202,31 @@ function handleCamClick(cam, prevDays) {
                 }
             })
         })
-
-
 }
 
-function clearCams() {
+function clearCams () {
     document.querySelectorAll('.cams .image-container').forEach(e => e.remove())
 }
 
-function clearEvents() {
+function clearEvents () {
     document.querySelectorAll('.cam-events .vid-container').forEach(e => e.remove())
 }
 
-function hideAllPages() {
+function hideAllPages () {
     page.authPage.style.display = 'none'
     page.cams.style.display = 'none'
     page.camEvents.style.display = 'none'
 }
 
-function showLoginPage() {
+function showLoginPage () {
     page.authPage.style.display = 'inherit'
 }
 
-function showCamsPage() {
+function showCamsPage () {
     page.cams.style.display = 'inherit'
 }
 
-function checkAuth() {
+function checkAuth () {
     fetch('/checkauth', {
         credentials: 'include'
     })
@@ -213,7 +242,7 @@ function checkAuth() {
         })
 }
 
-function updateCamsPage() {
+function updateCamsPage () {
     const todayYMD = moment().format('YYYY-MM-DD')
     const snapURLs = camNames.map(c => {
         const encodedResourceQuery = encodeURI(`${todayYMD}/${c}-snapshot.jpg`)
@@ -230,7 +259,6 @@ function updateCamsPage() {
         imageDiv.addEventListener('click', () => handleCamClick(camName))
     })
 }
-
 
 window.onload = () => {
     init()
