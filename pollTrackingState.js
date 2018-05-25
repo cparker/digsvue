@@ -12,6 +12,12 @@ const camera = process.argv[2]
 const digsvueStateURL = `https://8cyz33x5i2.execute-api.us-east-1.amazonaws.com/api-stage-production/hello-lambda-3`
 const AWS_LAMBDA_KEY = process.env.AWS_LAMBDA_KEY || (() => { console.log('please set AWS_LAMBDA_KEY'); process.exit(1) })()
 
+const cameraControlURL = `http://localhost:8080/$ID/detection/$ACTION`
+const cameraNameToIds = {
+    'living-room': 0,
+    garage: 1
+}
+
 async function go () {
     if (camera) {
         const trackingState = await getTrackingStateForCamera(camera)
@@ -70,10 +76,20 @@ function setTrackingStateForCamera (camera, trackingState, testHour) {
         }
     }
     console.log(`setting ${camera} to ${JSON.stringify(foundState)}`)
+
+    const state = Object.entries(foundState)[0][0]
+    const cameraId = cameraNameToIds[camera]
+    let url = ''
+    if (state === 'on') {
+        url = cameraControlURL.replace('$ID', cameraId).replace('$ACTION', 'start')
+    } else {
+        url = cameraControlURL.replace('$ID', cameraId).replace('$ACTION', 'pause')
+    }
+    console.log(`HTTP GET ${url}`)
+    restClient.get(cameraControlURL, {}, (data, response) => {
+        console.log(`response status ${response.statusCode}`)
+    })
 }
 
-// function test () {
-//     //setTrackingStateForCamera('testcam', [{off: 6}, {on: 21}], 5)
-//     setTrackingStateForCamera('testcam', [{off: 0}], 13)
-// }
+// setTrackingStateForCamera('garage', [{on: 0}], 13)
 go()
