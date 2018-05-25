@@ -90,7 +90,6 @@ app.get('/checkauth', (req, res) => {
     res.sendStatus(200)
 })
 
-
 /*
   fetch stuff from s3 bucket
   s3?resource=2018-05-18/foo.jpg
@@ -100,7 +99,7 @@ app.get('/s3', (req, res) => {
     const contentType = mimeTypes.lookup(req.query.resource) || 'application/octet-stream'
 
     const params = {
-        Bucket: "digsvue2",
+        Bucket: 'digsvue2',
         Key: `camera-uploads/${req.query.resource}`
     }
     const downloader = s3client.downloadBuffer(params)
@@ -115,8 +114,7 @@ app.get('/s3', (req, res) => {
     })
 })
 
-
-function gets3Files(bucket, key) {
+function gets3Files (bucket, key) {
     return new Promise((resolve, reject) => {
         const params = {
             Bucket: `${bucket}`,
@@ -154,7 +152,7 @@ app.get('/getEvents/:camName', async (req, res) => {
         .map(result => result.Contents)
 
     const flatFiles = _.flatten(filesByDay)
-    const byCamera = flatFiles.filter(rec => rec.Key.indexOf(req.params.camName) != -1)
+    const byCamera = flatFiles.filter(rec => rec.Key.indexOf(req.params.camName) !== -1)
 
     res.status(200).json(byCamera)
 })
@@ -186,7 +184,7 @@ app.post('/tracking', (req, res) => {
         })
 })
 
-function sendDigsvueState(state, params) {
+function sendDigsvueState (state, params) {
     return new Promise((resolve, reject) => {
         const args = {
             headers: {
@@ -202,11 +200,10 @@ function sendDigsvueState(state, params) {
             if (response.statusCode === 200) {
                 resolve(data)
             } else {
-                console.log(`error posting to ${digsvueStateURL}`, response)
+                console.log(`error posting to ${digsvueStateURL}`, data)
                 reject(data)
             }
         })
-
     })
 }
 

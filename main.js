@@ -117,7 +117,7 @@ function postTrackingSimple (camera, trackingOn) {
 
 function postTracking (camera, trackingConfig) {
     const body = {}
-    body[camera] = trackingConfig
+    body.trackingState = trackingConfig
     fetch(`/tracking?id=${encodeURIComponent(camera)}`, {
         method: 'POST',
         headers: {
