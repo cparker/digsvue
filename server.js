@@ -184,6 +184,10 @@ app.post('/tracking', (req, res) => {
         })
 })
 
+app.get('/tracking', (req, res) => {
+    console.log('GET /tracking')
+})
+
 function sendDigsvueState (state, params) {
     return new Promise((resolve, reject) => {
         const args = {
@@ -201,6 +205,26 @@ function sendDigsvueState (state, params) {
                 resolve(data)
             } else {
                 console.log(`error posting to ${digsvueStateURL}`, data)
+                reject(data)
+            }
+        })
+    })
+}
+
+function getDigsvueState () {
+    const args = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Accepts': 'application/json',
+            'x-api-key': `${AWS_LAMBDA_KEY}`
+        }
+    }
+    return new Promise((resolve, reject) => {
+        restClient.get(digsvueStateURL, args, (data, res) => {
+            if (res.statusCode === 200) {
+                resolve(data)
+            } else {
+                console.log(`error in call to ${digsvueStateURL}`, data)
                 reject(data)
             }
         })
