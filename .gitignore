@@ -11,3 +11,4 @@ testvids/
 .readme-env
 package-lock.json
 *.zip
+.cooks
