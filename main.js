@@ -53,7 +53,7 @@ function getPage () {
 
     p.trackOn.addEventListener('click', () => trackOn())
     p.trackOff.addEventListener('click', () => trackOff())
-    p.trackSchedule.addEventListener('click', () => trackScheduleOn(0))
+    p.trackSchedule.addEventListener('click', () => selectTrackBySchedule())
 
     p.trackOnPlus.addEventListener('click', () => trackScheduleOn(1))
     p.trackOnMinus.addEventListener('click', () => trackScheduleOn(-1))
@@ -73,31 +73,42 @@ function trackOff () {
     postTrackingSimple(activeCam, false)
 }
 
+const debouncedPostTrackingSchedule = _.debounce(postTrackingSchedule, 1000)
+
+function selectTrackBySchedule () {
+    page.trackOnValue.innerHTML = 0
+    page.trackOffValue.innerHTML = 0
+}
+
 function trackScheduleOn (value) {
-    console.log('track schedule on', value)
+    console.log('handling track off')
     const newVal = parseInt(page.trackOnValue.innerHTML) + value
     page.trackOnValue.innerHTML = `${newVal}`
-    postTrackingSchedule(activeCam, parseInt(page.trackOnValue.innerHTML), parseInt(page.trackOffValue.innerHTML))
+    debouncedPostTrackingSchedule(activeCam, parseInt(page.trackOnValue.innerHTML), parseInt(page.trackOffValue.innerHTML))
 }
 
 function trackScheduleOff (value) {
-    console.log('track schedule off', value)
+    console.log('handling track off')
     const newVal = parseInt(page.trackOffValue.innerHTML) + value
     page.trackOffValue.innerHTML = `${newVal}`
-    postTrackingSchedule(activeCam, parseInt(page.trackOnValue.innerHTML), parseInt(page.trackOffValue.innerHTML))
+    debouncedPostTrackingSchedule(activeCam, parseInt(page.trackOnValue.innerHTML), parseInt(page.trackOffValue.innerHTML))
 }
 
 function closeSettings () {
     page.settingsPage.style.width = `0`
 }
 
-function openSettings () {
+async function openSettings () {
     console.log('opening settings')
     page.settingsCam.innerHTML = `${activeCam}`
     page.settingsPage.style.width = `100vw`
+    const trackingResponse = await getTracking(activeCam)
+    console.log('got tracking response', trackingResponse)
+    updateSettingsForm(activeCam, trackingResponse.trackingState)
 }
 
 function postTrackingSchedule (camera, on, off) {
+    console.log('posting tracking')
     const onConfig = { on: on }
     const offConfig = { off: off }
     /*
@@ -113,6 +124,58 @@ function postTrackingSchedule (camera, on, off) {
 function postTrackingSimple (camera, trackingOn) {
     const trackingConfig = trackingOn ? [{ 'on': 0 }] : [{ 'off': 0 }]
     postTracking(camera, trackingConfig)
+}
+
+function clearSettingsForm () {
+    page.trackOn.checked = false
+    page.trackOff.checked = false
+    page.trackSchedule.checked = false
+    page.trackOnValue.innerHTML = '-'
+    page.trackOffValue.innerHTML = '-'
+}
+
+function updateSettingsForm (camera, trackingConfig) {
+    // tracking config will look like this
+    // {"id":"living-room","trackingState":[{"on":0}]}
+    clearSettingsForm()
+    if (trackingConfig.length === 1) {
+        trackingConfig.forEach(rec => {
+            rec.hasOwnProperty('on') ? page.trackOn.checked = true : page.trackOff.checked = true
+        })
+    } else {
+        page.trackSchedule.checked = true
+        trackingConfig.forEach(rec => {
+            const onOrOff = Object.entries(rec)[0][0]
+            const hour = Object.entries(rec)[0][1]
+            onOrOff === 'on' ? page.trackOnValue.innerHTML = `${hour}` : page.trackOffValue.innerHTML = `${hour}`
+        })
+    }
+}
+
+function getTracking (camera) {
+    return new Promise((resolve, reject) => {
+        fetch(`/tracking?id=${encodeURIComponent(camera)}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        })
+            .then(response => {
+                console.log('tracking response', response)
+                if (response.ok) {
+                    return response.json()
+                }
+            })
+            .then(json => {
+                console.log('tracking json', json)
+                resolve(json)
+            })
+            .catch(err => {
+                reject(err)
+            })
+    })
 }
 
 function postTracking (camera, trackingConfig) {

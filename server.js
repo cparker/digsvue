@@ -186,6 +186,13 @@ app.post('/tracking', (req, res) => {
 
 app.get('/tracking', (req, res) => {
     console.log('GET /tracking')
+    getDigsvueState(req.query)
+        .then(data => {
+            res.status(200).json(data)
+        })
+        .catch(err => {
+            res.status(500).json(err)
+        })
 })
 
 function sendDigsvueState (state, params) {
@@ -211,13 +218,14 @@ function sendDigsvueState (state, params) {
     })
 }
 
-function getDigsvueState () {
+function getDigsvueState (params) {
     const args = {
         headers: {
             'Content-Type': 'application/json',
             'Accepts': 'application/json',
             'x-api-key': `${AWS_LAMBDA_KEY}`
-        }
+        },
+        parameters: params
     }
     return new Promise((resolve, reject) => {
         restClient.get(digsvueStateURL, args, (data, res) => {

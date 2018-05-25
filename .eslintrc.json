@@ -15,7 +15,8 @@
         "navigator": false,
         "window": false,
         "fetch": false,
-        "moment" : false
+        "moment" : false,
+        "_" : false
     },
     "rules": {
         "semi": 0,
