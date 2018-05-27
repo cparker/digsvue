@@ -14,8 +14,8 @@ const AWS_LAMBDA_KEY = process.env.AWS_LAMBDA_KEY || (() => { console.log('pleas
 
 const cameraControlURL = `http://localhost:8080/$ID/detection/$ACTION`
 const cameraNameToIds = {
-    'living-room': 0,
-    garage: 1
+    'living-room': 1,
+    garage: 2
 }
 
 async function go () {
