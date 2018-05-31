@@ -12,3 +12,4 @@ testvids/
 package-lock.json
 *.zip
 .cooks
+.crons
