@@ -23,9 +23,9 @@ async function go () {
         const trackingState = await getTrackingStateForCamera(camera)
         setTrackingStateForCamera(camera, trackingState)
     } else {
-        for (const camera in cameras) {
-            const trackingState = await getTrackingStateForCamera(camera)
-            setTrackingStateForCamera(camera, trackingState)
+        for (const cameraIndex in cameras) {
+            const result = await getTrackingStateForCamera(cameras[cameraIndex])
+            setTrackingStateForCamera(cameras[cameraIndex], result.trackingState)
         }
     }
 }
@@ -43,7 +43,6 @@ function getTrackingStateForCamera (camera) {
             }
         }
 
-        console.log('looking for', args)
 
         restClient.get(digsvueStateURL, args, (data, response) => {
             if (response.statusCode === 200) {
@@ -86,7 +85,7 @@ function setTrackingStateForCamera (camera, trackingState, testHour) {
         url = cameraControlURL.replace('$ID', cameraId).replace('$ACTION', 'pause')
     }
     console.log(`HTTP GET ${url}`)
-    restClient.get(cameraControlURL, {}, (data, response) => {
+    restClient.get(url, {}, (data, response) => {
         console.log(`response status ${response.statusCode}`)
     })
 }
