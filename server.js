@@ -17,7 +17,7 @@ const mimeTypes = require('mime-types')
 
 const aws3 = new AWS.S3()
 
-const digsvueStateURL = `https://8cyz33x5i2.execute-api.us-east-1.amazonaws.com/api-stage-production/hello-lambda-3`
+const digsvueStateURL = `https://nm2uang4nh.execute-api.us-east-1.amazonaws.com/default/digsvueState`
 const AWS_LAMBDA_KEY = process.env.AWS_LAMBDA_KEY || (() => { console.log('please set AWS_LAMBDA_KEY'); process.exit(1) })()
 
 let s3info = {
